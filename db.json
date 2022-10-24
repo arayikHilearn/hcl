@@ -1,0 +1,49 @@
+{
+  "events": [
+    {
+      "author": "user",
+      "date": "2022.05.06",
+      "description": "aaa",
+      "guest": "admin",
+      "id": 2
+    },
+    {
+      "author": "user",
+      "date": "2022.05.26",
+      "description": "bb",
+      "guest": "admin",
+      "id": 3
+    }
+  ],
+  "users": [
+    {
+      "username": "user",
+      "password": "123"
+    },
+    {
+      "username": "admin",
+      "password": "123"
+    }
+  ],
+  "posts": [
+    {
+      "id": 2,
+      "title": "gggg",
+      "body": "body - gggg"
+    },
+    {
+      "title": "sadf",
+      "body": "body - sadf",
+      "id": 3
+    },
+    {
+      "title": "ssadas",
+      "body": "body - ssadas",
+      "id": 4
+    }
+  ],
+  "comments": [],
+  "profile": {
+    "name": "typicode"
+  }
+}
