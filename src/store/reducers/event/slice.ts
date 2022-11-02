@@ -11,61 +11,61 @@ const initialState: IEventState = {
     error: ''
 };
 
-const eventSlice = createSlice( {
+const eventSlice = createSlice({
     name: 'event',
     initialState,
     reducers: {
-        setGuests( state, { payload }: PayloadAction<IUser[]> ) {
-            state.guests.push( ...payload );
+        setGuests(state, { payload }: PayloadAction<IUser[]>) {
+            state.guests.push(...payload);
         },
-        setEvents( state, { payload }: PayloadAction<IEvent[]> ) {
-            state.events.push( ...payload );
+        setEvents(state, { payload }: PayloadAction<IEvent[]>) {
+            state.events.push(...payload);
         }
     },
     extraReducers: {
-        [fetchGuests.fulfilled.type]: ( state, { payload }: PayloadAction<IUser[]> ) => {
+        [fetchGuests.fulfilled.type]: (state, { payload }: PayloadAction<IUser[]>) => {
             state.guests = payload;
             state.isLoading = false;
             state.error = '';
         },
-        [fetchGuests.pending.type]: ( state ) => {
+        [fetchGuests.pending.type]: (state) => {
             state.isLoading = true;
         },
-        [fetchGuests.rejected.type]: ( state, { payload }: PayloadAction<string> ) => {
+        [fetchGuests.rejected.type]: (state, { payload }: PayloadAction<string>) => {
             state.isLoading = false;
             state.error = payload;
         },
-        [createEvent.fulfilled.type]: ( state, { payload }: PayloadAction<IEvent> ) => {
-            state.events.push( payload );
+        [createEvent.fulfilled.type]: (state, { payload }: PayloadAction<IEvent>) => {
+            state.events.push(payload);
             state.isLoading = false;
             state.error = '';
         },
-        [createEvent.pending.type]: ( state ) => {
+        [createEvent.pending.type]: (state) => {
             state.isLoading = true;
         },
-        [createEvent.rejected.type]: ( state, { payload }: PayloadAction<string> ) => {
+        [createEvent.rejected.type]: (state, { payload }: PayloadAction<string>) => {
             state.isLoading = false;
             state.error = payload;
         },
-        [fetchEvents.fulfilled.type]: ( state, { payload }: PayloadAction<IEvent[]> ) => {
+        [fetchEvents.fulfilled.type]: (state, { payload }: PayloadAction<IEvent[]>) => {
             state.events = payload;
             state.isLoading = false;
             state.error = '';
         },
-        [fetchEvents.pending.type]: ( state ) => {
+        [fetchEvents.pending.type]: (state) => {
             state.isLoading = true;
         },
-        [fetchEvents.rejected.type]: ( state, { payload }: PayloadAction<string> ) => {
+        [fetchEvents.rejected.type]: (state, { payload }: PayloadAction<string>) => {
             state.isLoading = false;
             state.error = payload;
         },
     }
-} );
+});
 
 export const eventActionsCreators = {
     ...eventSlice.actions,
     fetchGuests,
     fetchEvents,
-    createEvent 
+    createEvent
 };
 export default eventSlice.reducer;

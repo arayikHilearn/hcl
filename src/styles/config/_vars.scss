@@ -1,0 +1,16 @@
+$fz: 1.6em;
+$lh: calc(19 / 16) * 1em;
+$ff: "Inter";
+$maxScreen: 1440;
+$maxContainer: 1200;
+
+$maxGutter: 15;
+$minGutter: 8;
+$gutter: clamp(calc($minGutter / 10) * 1rem, calc($maxGutter / $maxScreen) * 100%, calc($maxGutter / 10) * 1rem);
+
+$cDark:  #000;
+$cLight: #fff;
+$cLightOp: rgba($cLight, 0.6);
+$cDarkOp: rgba($cDark, 0.6);
+$cAccent: #C3F84F;
+$cError: #BF0808;

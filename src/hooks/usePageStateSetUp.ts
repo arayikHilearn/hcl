@@ -6,11 +6,11 @@ export const usePageStateSetUp = () => {
     const { stateSetUp } = useActions();
     const { pathname } = useLocation();
     const navigate = useNavigate();
- 
-    useEffect( () => {
-        console.log( 'usePageStateSetUp: watcher on change pathname' );
-        stateSetUp( { pathname, navigate } );
-    }, [ pathname ] );
+
+    useEffect(() => {
+        console.log('usePageStateSetUp: watcher on change pathname');
+        stateSetUp({ pathname, navigate });
+    }, [ pathname ]);
 
     return pathname;
 };

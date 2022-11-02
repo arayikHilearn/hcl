@@ -1,0 +1,82 @@
+@import "../config/vars";
+
+$width: 1.6rem;
+$color: $cAccent;
+
+.menu {
+  margin: 0;
+  display: flex;
+  min-width: 380px;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.li {
+  z-index: 0;
+  position: relative;
+  list-style: none;
+  border-radius: $width;
+
+  &::before,
+  &::after {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: -1;
+    content: "";
+    width: 0%;
+    height: 0.1rem;
+    background-color: darken($color, 10%);
+    transition: all 0.26s cubic-bezier(0.4, -1, 0.2, -1);
+  }
+
+  &:before {
+    top: 0;
+    border-top-right-radius: $width / 2;
+    border-top-left-radius: $width / 2;
+  }
+  &::after {
+    bottom: 0;
+    border-bottom-right-radius: $width / 2;
+    border-bottom-left-radius: $width / 2;
+  }
+
+  &:hover {
+    &::before,
+    &::after {
+      width: 40%;
+      height: 0.145rem;
+      transition: all 0.42s cubic-bezier(0.4, -2, 0.2, 1);
+    }
+    &::before {
+      box-shadow: 0rem 0.18rem 0.38rem 0.01rem rgba(#beffc4, 0.94);
+    }
+    &::after {
+      box-shadow: 0rem -0.18rem 0.38rem 0.01rem rgba(#beffc4, 0.94);
+    }
+  }
+
+  a, span {
+    //text-decoration: none;
+    text-transform: uppercase;
+    display: block;
+    padding: $width / 2 ($width * 2);
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: lighten($color, 20%);
+  }
+
+  span {
+    cursor: pointer;
+  }
+
+  &.active {
+    border-color: darken($color, 40%);
+
+    &::before,
+    &::after {
+      width: 100%;
+      height: 50%;
+    }
+  }
+}

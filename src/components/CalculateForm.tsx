@@ -1,3 +1,71 @@
+import { FC, FormEvent, useMemo } from 'react';
+import { useActions, useAppSelector } from '../hooks/redux';
+import { calculateForm } from '../store/selectors';
+import AppInput from './UI/AppInput';
+import styles from  'src/styles/components/CalculateForm.module.scss';
+import getMaskOptions from '../utils/getMaskOptions';
+import { loanProgramMap } from '../store/reducers/calculateForm';
+import { useRenderWatcher } from '../hooks/useRenderWatcher';
+
+const CalculateForm: FC = () => {
+    useRenderWatcher('CalculateForm');
+
+    const actions = useActions();
+    const { actions: { setHomePrice, setCashAvailable, setInterestRate, calculate }, priceMaskOptions, percentMaskOptions } = useMemo(() => ({
+        actions,
+        priceMaskOptions: getMaskOptions('$'),
+        percentMaskOptions: getMaskOptions('%', 'percent')
+    }), []);
+    const loanProgram = useAppSelector(calculateForm.loanProgramSelector);
+    const hasError = useAppSelector(calculateForm.hasErrorSelector);
+
+    function onSubmit(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        calculate();
+    }
+
+    return (
+        <form
+            onSubmit={ onSubmit }
+            className={ `row ${styles.form}` }
+        >
+            <AppInput
+                name="homePrice"
+                label="Home price"
+                selector={ calculateForm.homePriceSelector }
+                onChangeHandler={ setHomePrice }
+                mask={ priceMaskOptions }
+            />
+            <AppInput
+                name="loanProgram"
+                disabled={ true }
+                label="Loan program"
+                inputValue={ loanProgram ? loanProgramMap.get(loanProgram) : '' }
+            />
+            <AppInput
+                name="cashAvailable"
+                label="Cash available for down payment"
+                selector={ calculateForm.cashAvailableSelector }
+                onChangeHandler={ setCashAvailable }
+                mask={ priceMaskOptions }
+            />
+            <AppInput
+                name="interestRate"
+                label="Interest rate"
+                selector={ calculateForm.interestRateSelector }
+                onChangeHandler={ setInterestRate }
+                mask={ percentMaskOptions }
+            />
+            <button
+                type="submit"
+                disabled={ hasError }
+            >submit
+            </button>
+        </form>
+    );
+};
+
+export default CalculateForm;
 // import { FC, useState } from 'react';
 // import { Button, DatePicker, Form, Input, Row, Select } from 'antd';
 // import { rules } from '../utils/rules';
@@ -81,3 +149,4 @@
 // };
 //
 // export default EventForm;
+export {};

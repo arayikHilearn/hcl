@@ -8,40 +8,40 @@ const initialState: IAuthState = {
     user: null,
     isLoading: false,
     error: ''
-}; 
+};
 
-const authSlice = createSlice( {
+const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        setUser( state, { payload }: PayloadAction<IUser> ) {
+        setUser(state, { payload }: PayloadAction<IUser>) {
             state.user = payload;
         },
-        setIsAuth( state, { payload }: PayloadAction<boolean> ) {
+        setIsAuth(state, { payload }: PayloadAction<boolean>) {
             state.isAuth = payload;
         }
     },
     extraReducers: {
-        [login.fulfilled.type]: ( state, { payload }: PayloadAction<IUser> ) => {
-            console.log( payload );
+        [login.fulfilled.type]: (state, { payload }: PayloadAction<IUser>) => {
+            console.log(payload);
             state.user = payload;
             state.isAuth = true;
             state.isLoading = false;
             state.error = '';
         },
-        [login.pending.type]: ( state ) => {
+        [login.pending.type]: (state) => {
             state.isLoading = false;
         },
-        [login.rejected.type]: ( state, { payload }: PayloadAction<string> ) => {
+        [login.rejected.type]: (state, { payload }: PayloadAction<string>) => {
             state.isLoading = false;
             state.error = payload;
         },
-        [logout.fulfilled.type]: ( state ) => {
+        [logout.fulfilled.type]: (state) => {
             state.user = null;
             state.isAuth = false;
         }
     }
-} );
+});
 
 export const authActionsCreators = {
     ...authSlice.actions,

@@ -4,19 +4,19 @@ import { routesConfig } from '../pages';
 
 const AppRouter: FC = () => {
 
-    useEffect( () => {
-        console.log( 'AppRouter::OnMount' );
-    }, [] );
+    useEffect(() => {
+        console.log('AppRouter::OnMount');
+    }, []);
 
     return (
         <Routes>
-            { routesConfig.map( ( { path, Element } ) => (
+            { routesConfig.map(({ path, Element }) => (
                 <Route
                     path={ path }
                     element={ <Element /> }
                     key={ path }
                 />
-            ) ) }
+            )) }
         </Routes>
     );
 };

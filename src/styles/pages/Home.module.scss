@@ -1,0 +1,12 @@
+@import "../config/vars";
+
+.title {
+  margin-bottom: 0.8rem;
+}
+
+.sub-title {
+  color: $cLightOp;
+  font-weight: 300;
+  margin: 0 0 32px;
+  line-height: calc(19 / 16) * 1em;
+}

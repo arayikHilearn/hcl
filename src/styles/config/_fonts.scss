@@ -1,0 +1,22 @@
+@mixin font($fname, $fstyle, $fweight, $furl, $fstretch: 100%) {
+  @font-face {
+    font-family: $fname;
+    font-style: $fstyle;
+    font-weight: $fweight;
+    font-stretch: $fstretch;
+    src: url($furl) format('woff2');
+    font-display: swap;
+  }
+}
+
+//Inter
+@include font('Inter', normal, 100 1000, '/assets/fonts/Inter/Inter-VariableFont_slnt,wght.woff2', 1% 500%);
+@include font('Inter', normal, 100, '/assets/fonts/Inter/Inter-Thin.woff2');
+@include font('Inter', normal, 200, '/assets/fonts/Inter/Inter-ExtraLight.woff2');
+@include font('Inter', normal, 300, '/assets/fonts/Inter/Inter-Light.woff2');
+@include font('Inter', normal, 400, '/assets/fonts/Inter/Inter-Regular.woff2');
+@include font('Inter', normal, 500, '/assets/fonts/Inter/Inter-Medium.woff2');
+@include font('Inter', normal, 600, '/assets/fonts/Inter/Inter-SemiBold.woff2');
+@include font('Inter', normal, 700, '/assets/fonts/Inter/Inter-Bold.woff2');
+@include font('Inter', normal, 800, '/assets/fonts/Inter/Inter-ExtraBold.woff2');
+@include font('Inter', normal, 900, '/assets/fonts/Inter/Inter-Black.woff2');

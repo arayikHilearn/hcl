@@ -2,10 +2,10 @@ import axios from 'axios';
 
 const baseURL = process.env.REACT_APP_API_URL;
 
-export const axiosWithoutInterceptors = axios.create( {
+export const axiosWithoutInterceptors = axios.create({
     withCredentials: true,
     baseURL
-} );
+});
 
 window.axios = axios;
 //axios.defaults.headers.common[ 'X-Requested-With' ] = 'XMLHttpRequest';

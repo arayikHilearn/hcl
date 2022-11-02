@@ -48,3 +48,4 @@
 // };
 //
 // export default PostTest;
+export {};

@@ -1,0 +1,76 @@
+//! FONT SIZE
+//! (set html font-size with rem) & (use rem (not px) or em)
+//! rem - last parent tag(like html) with rem
+//! em - first parent tag
+
+html {
+  font-size: calc(10 / 16) * 1rem;
+}
+
+body {
+  color: $cDark;
+  font-weight: 400;
+  font-size: $fz;
+  font-family: $ff;
+  line-height: $lh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  display: inline-block;
+}
+
+h1 {
+  font-size: 2.4rem;
+  line-height: calc(29 / 24) * 1em;
+  margin: 0;
+}
+
+.light-c {
+  color: $cLight;
+}
+
+.dark-c {
+  color: $cDark;
+}
+
+.dark-op-c {
+  color: $cDarkOp;
+}
+
+//.light-bgc{
+//  background-color: $cLight;
+//}
+//
+//.dark-bgc{
+//  background-color: $cDark;
+//}
+
+.link {
+  cursor: pointer;
+}
+
+.container {
+  box-sizing: content-box;
+  max-width: #{$maxContainer}px;
+  margin: 0 auto;
+  padding: 0 $gutter;
+}
+
+.row {
+  &, &-center {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  &-center {
+    justify-content: center;
+  }
+}
+
+.center {
+  margin: 0 auto;
+}

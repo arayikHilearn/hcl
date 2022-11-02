@@ -6,28 +6,28 @@ import { IAuthState } from '../auth';
 
 export const fetchGuests = createAsyncThunk(
     'event/fetchGuests',
-    async ( _, { rejectWithValue, fulfillWithValue, getState } ) => {
+    async (_, { rejectWithValue, fulfillWithValue, getState }) => {
         try {
             const { auth: { user: authUser } } = getState() as {auth: IAuthState};
-            const mockUsers = await userService.get( authUser?.username );
+            const mockUsers = await userService.get(authUser?.username);
 
-            return fulfillWithValue( mockUsers );
-        } catch ( err ) {
-            return rejectWithValue( 'Something went wrong!' );
+            return fulfillWithValue(mockUsers);
+        } catch (err) {
+            return rejectWithValue('Something went wrong!');
         }
 
     }
 );
- 
+
 export const fetchEvents = createAsyncThunk(
     'event/fetchEvents',
-    async ( _, { rejectWithValue, fulfillWithValue } ) => {
+    async (_, { rejectWithValue, fulfillWithValue }) => {
         try {
             const mockEvents = await eventService.get();
 
-            return fulfillWithValue( mockEvents );
-        } catch ( err ) {
-            return rejectWithValue( 'Something went wrong!' );
+            return fulfillWithValue(mockEvents);
+        } catch (err) {
+            return rejectWithValue('Something went wrong!');
         }
 
     }
@@ -35,13 +35,13 @@ export const fetchEvents = createAsyncThunk(
 
 export const createEvent = createAsyncThunk(
     'event/create',
-    async ( event: IEvent, { rejectWithValue, fulfillWithValue } ) => {
+    async (event: IEvent, { rejectWithValue, fulfillWithValue }) => {
         try {
-            const mockEvent = await eventService.create( event );
+            const mockEvent = await eventService.create(event);
 
-            return fulfillWithValue( mockEvent );
-        } catch ( err ) {
-            return rejectWithValue( 'Something went wrong!' );
+            return fulfillWithValue(mockEvent);
+        } catch (err) {
+            return rejectWithValue('Something went wrong!');
         }
 
     }

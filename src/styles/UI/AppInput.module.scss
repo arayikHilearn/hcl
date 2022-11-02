@@ -1,0 +1,76 @@
+@import "../config/vars";
+
+.input {
+  line-height: $lh;
+  font-weight: 600;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+  width: 100%;
+
+  &:disabled {
+    color: $cDark;
+  }
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+  }
+
+  &[type=number] {
+    -moz-appearance:textfield; /* Firefox */
+  }
+
+  &-wrapper {
+    width: calc(343 / 710) * 100%;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    &.disabled {
+      cursor: default;
+    }
+    &:focus-within {
+      .input-label {
+        font-size: 1.2rem;
+        top: 0.8rem;
+        transform: none;
+      }
+    }
+  }
+
+  &-label {
+    transition: all 0.14s linear;
+    font-size: 1.2rem;
+    line-height: calc(15 / 12) * 1em;
+    position: absolute;
+    left: 2.4rem;
+    top: 0.8rem;
+    &.empty {
+      font-size: 1.6rem;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+
+  &-area {
+    display: flex;
+    align-items: baseline;
+    overflow: hidden;
+    background: $cLight;
+    border-radius: 3.2rem;
+    padding: 2.7rem 2.4rem 0.8rem;
+  }
+
+  &-error {
+    font-size: 1.2rem;
+    line-height: calc(15 / 12) * 1em;
+    position: absolute;
+    top: calc(100% + 0.4rem);
+    left: 2.7rem;
+    color: $cError;
+  }
+}

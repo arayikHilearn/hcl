@@ -1,42 +1,26 @@
-import { FC, useState } from 'react';
-import EventsCalendar from '../components/EventsCalendar';
-import { Button, Modal, Row } from 'antd';
-import EventForm from '../components/EventForm';
-import { useActions, useAppSelector } from '../hooks/redux';
-import { IEvent } from '../models/event';
+import { FC } from 'react';
+import CalculateForm from '../components/CalculateForm';
+import AppHeader from '../components/UI/AppHeader';
+import styles from 'src/styles/pages/Home.module.scss';
 
 const Home: FC = () => {
-    const [ modalVisible, setModalVisible ] = useState( false );
-    const { createEvent } = useActions();
-    const { guests, events } = useAppSelector( state => state.event );
-
-    function createNewEvent( event: IEvent ) {
-        setModalVisible( false );
-        createEvent( event );
-    }
+    // const [ modalVisible, setModalVisible ] = useState(false);
+    // const { createEvent } = useActions();
+    // const { guests, events } = useAppSelector(state => state.event);
+    //
+    // function createNewEvent(event: IEvent) {
+    //     setModalVisible(false);
+    //     createEvent(event);
+    // }
 
     return (
-        <div>
-            <EventsCalendar events={ events } />
-            <Row justify="center">
-                <Button
-                    onClick={ () => setModalVisible( true ) }
-                >
-                    Add event
-                </Button>
-            </Row>
-            <Modal
-                title="Add event"
-                visible={ modalVisible }
-                footer={ null }
-                onCancel={ () => setModalVisible( false ) }
-            >
-                <EventForm
-                    submit={ createNewEvent }
-                    guests={ guests }
-                />
-            </Modal>
-        </div>
+        <AppHeader>
+            <div className="container">
+                <h1 className={ `light-c ${styles['title']}` }>Hybrid Collateral Loan (HCL)</h1>
+                <h4 className={ `light-c ${styles['sub-title']}` }>Description text goes her for the hybrid collateral loan</h4>
+                <CalculateForm />
+            </div>
+        </AppHeader>
     );
 };
 
