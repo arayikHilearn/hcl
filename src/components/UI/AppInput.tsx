@@ -27,10 +27,7 @@ const AppInput: FC<InputProps> = ({
     mask,
     ...defaultProps
 }) => {
-    useRenderWatcher('AppInput' + ' ' + name);
     const error = useAppSelector(calculateForm.errorSelector(name));
-    console.log({ name, error }, 5555666);
-
     const value = inputValue ? inputValue : selector ? useAppSelector(selector) : '';
     let inputProps = {
         ...defaultProps,
@@ -45,8 +42,7 @@ const AppInput: FC<InputProps> = ({
         }
     };
 
-    console.log({ value, inputProps }, 88);
-
+    useRenderWatcher('AppInput', [ name, value, error ]);
     return (
         <label className={ _c(styles['input-wrapper'], {
             [styles['disabled']]: inputProps.disabled

@@ -4,8 +4,11 @@
   max-width: 71rem;
   width: 100%;
   justify-content: space-between;
-  grid-row-gap: 2.4rem;
-  //label:nth-child(-n + 2) {
-  //  margin-bottom: 2.4rem;
-  //}
+  //grid-row-gap: 2.4rem;
+  label {
+    margin-bottom: 2.4rem;
+  }
+  button {
+    margin-top: 0.8rem;
+  }
 }

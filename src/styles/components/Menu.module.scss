@@ -1,6 +1,6 @@
 @import "../config/vars";
 
-$width: 1.6rem;
+$width: 1.6em;
 $color: $cAccent;
 
 .menu {
@@ -8,7 +8,7 @@ $color: $cAccent;
   display: flex;
   min-width: 380px;
   justify-content: space-around;
-  align-items: center;
+  align-itrems: center;
 }
 
 .li {
