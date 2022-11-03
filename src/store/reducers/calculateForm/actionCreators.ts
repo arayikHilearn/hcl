@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { TRootState } from '../../index';
 import { ICalculateForm } from './index';
-import { emptyErrorMessage } from '../../../config/errorMessages';
+import { emptyErrorMessage } from '../../../config';
 
 export const calculate = createAsyncThunk(
     'auth/login',
@@ -28,6 +28,8 @@ export const calculate = createAsyncThunk(
             if (Object.keys(error).length) {
                 return rejectWithValue(error);
             }
+
+            console.log({ loanProgram, cashAvailable, homePrice, interestRate }, 'BODY');
         } catch (err) {
             console.log(err);
             return rejectWithValue('Something went wrong!');

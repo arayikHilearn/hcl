@@ -4,20 +4,22 @@
 //! em - first parent tag
 
 html {
-  font-size: calc(10 / $maxScreen) * 100vw;
+  //font-size: calc(10 / $maxScreen) * 100vw;
+  font-size: calc(10 / 16) * 1rem;
 }
 
 body {
+  font-size: $fz;
   color: $cDark;
   font-weight: 400;
-  font-size: calc(10 / 16) * 1rem;
+  //font-size: calc(10 / 16) * 1rem;
   font-family: $ff;
   line-height: $lh;
 }
 
-#root {
-  font-size: $fz;
-}
+//#root {
+//  font-size: $fz;
+//}
 
 * {
   box-sizing: border-box;
@@ -66,13 +68,20 @@ h1 {
 }
 
 .row {
-  &, &-center {
+  &, &-center, &-sb {
     display: flex;
-    flex-wrap: wrap;
   }
   &-center {
     justify-content: center;
   }
+  &-sb {
+    justify-content: space-between;
+  }
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
 }
 
 .center {

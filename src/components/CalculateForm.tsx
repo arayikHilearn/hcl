@@ -7,12 +7,13 @@ import getMaskOptions from '../utils/getMaskOptions';
 import { loanProgramMap } from '../store/reducers/calculateForm';
 import { useRenderWatcher } from '../hooks/useRenderWatcher';
 import AppButton from './UI/AppButton';
+import { CURRENCY } from '../config';
 
 const CalculateForm: FC = () => {
     const actions = useActions();
     const { actions: { setHomePrice, setCashAvailable, setInterestRate, calculate }, priceMaskOptions, percentMaskOptions } = useMemo(() => ({
         actions,
-        priceMaskOptions: getMaskOptions('$'),
+        priceMaskOptions: getMaskOptions(CURRENCY),
         percentMaskOptions: getMaskOptions('%', 'percent')
     }), []);
     const loanProgram = useAppSelector(calculateForm.loanProgramSelector);

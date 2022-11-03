@@ -1,8 +1,7 @@
 @import "../config/vars";
 
 .form {
-  max-width: 71rem;
-  width: 100%;
+  flex-wrap: wrap;
   justify-content: space-between;
   //grid-row-gap: 2.4rem;
   label {

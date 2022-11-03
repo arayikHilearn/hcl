@@ -10,3 +10,26 @@
   margin: 0 0 3.2rem;
   line-height: calc(19 / 16) * 1em;
 }
+
+.col-1, .col-2 {
+  //flex: 1;
+  flex-grow: 1;
+}
+
+.col-1 {
+  max-width: 71rem;
+  margin-right: calc(24 / $maxContainer) * 100%;
+  //width: 100%;
+  justify-content: space-between;
+}
+
+.col-2 {
+  max-width: 42.6rem;
+  margin: -6.1rem 0;
+  //width: 100%;
+  padding: 6.1rem 2.4rem;
+  background-image: url(/assets/images/background-grid-2.png);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}

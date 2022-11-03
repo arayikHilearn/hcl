@@ -3,6 +3,7 @@ $maxContainer: 1200;
 $fz: 1.6rem;
 $lh: calc(19 / 16) * 1em;
 $ff: "Inter";
+$transition: all 0.16s linear;
 
 
 $maxGutter: 15;
@@ -14,4 +15,5 @@ $cLight: #fff;
 $cLightOp: rgba($cLight, 0.6);
 $cDarkOp: rgba($cDark, 0.6);
 $cAccent: #C3F84F;
+$cAccentOp: rgba($cAccent, 0.5);
 $cError: #BF0808;

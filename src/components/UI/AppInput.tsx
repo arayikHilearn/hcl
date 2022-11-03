@@ -44,20 +44,28 @@ const AppInput: FC<InputProps> = ({
 
     useRenderWatcher('AppInput', [ name, value, error ]);
     return (
-        <label className={ _c(styles['input-wrapper'], {
-            [styles['disabled']]: inputProps.disabled
-        }) }
-        >
-            <span className={ _c('dark-op-c', styles['input-label'], {
-                [styles['empty']]: !value
+        <label className={ _c(
+            styles['input-wrapper'], {
+                [styles['disabled']]: inputProps.disabled
             }) }
+        >
+            <span className={ _c(
+                'dark-op-c',
+                styles['input-label'], {
+                    [styles['empty']]: !value
+                }) }
             >
                 { label }
             </span>
             <div className={ styles['input-area'] }>
-                { mask ? <MaskedInput { ...inputProps } /> : <input { ...inputProps } /> }
+                {
+                    mask
+                        ? <MaskedInput { ...inputProps } />
+                        : <input { ...inputProps } />
+                }
             </div>
-            <span className={ styles['input-error'] }>{ error }</span>
+            <span className={ styles['input-error'] }>{ error }
+            </span>
         </label>
     );
 };

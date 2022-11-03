@@ -1,16 +1,24 @@
 @import "../config/vars";
 
 .button {
+  transition: $transition;
   position: relative;
   cursor: pointer;
   width: 100%;
-  background: $cAccent;
+  background-color: $cAccent;
   border: none;
   border-radius: 3.2rem;
   font-weight: 700;
   padding: 1.8rem 2.4rem 1.7rem;
   &:disabled {
     cursor: auto;
+    background-color: $cAccentOp;
+    &:hover {
+      background-color: $cAccentOp;
+    }
+  }
+  &:hover {
+    background-color: darken($cAccent, 6%);
   }
 }
 

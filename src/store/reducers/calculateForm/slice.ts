@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { calculate } from './actionCreators';
 import { ICalculateForm } from './index';
-import { emptyErrorMessage } from '../../../config/errorMessages';
+import { emptyErrorMessage } from '../../../config';
 
 const initialState: ICalculateForm = {
     homePrice: null,

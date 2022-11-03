@@ -64,7 +64,7 @@
                 }
             }
         ],
-        "react/jsx-curly-newline": "error",
+        "react/jsx-curly-newline": ["error", { "multiline": "consistent", "singleline": "forbid" }],
         "react/jsx-equals-spacing": ["error", "never"],
         "react/react-in-jsx-scope": "off",
         "react/jsx-uses-react": "off",
