@@ -1,7 +1,4 @@
 import { AnyAction, createAsyncThunk, ThunkAction, ThunkDispatch } from '@reduxjs/toolkit';
-import postAPI from '../services/postSevice';
-import { eventActionsCreators } from '../store/reducers/event/slice';
-import { authActionsCreators } from '../store/reducers/auth/slice';
 import { NavigateFunction } from 'react-router-dom';
 import { ERoutes } from '../pages';
 import { TRootState } from '../store';
@@ -86,8 +83,8 @@ class StateSetUpConfig {
 
     private async checkAuthorization(dispatch: ThunkDispatch<unknown, unknown, AnyAction>): Promise<void> {
         if (localStorage.getItem('auth')) {
-            await dispatch(authActionsCreators.setIsAuth(true));
-            await dispatch(authActionsCreators.setUser({ username: localStorage.getItem('username') || '' }));
+            // await dispatch(authActionsCreators.setIsAuth(true));
+            // await dispatch(authActionsCreators.setUser({ username: localStorage.getItem('username') || '' }));
             this.isAuth = true;
         }
     }
@@ -121,7 +118,7 @@ class StateSetUpConfig {
         'app/stateSetUp',
         async ({ pathname, navigate }, { rejectWithValue, fulfillWithValue, getState, dispatch }) => {
             try {
-                console.log('app/stateSetUp::start');
+                console.info('app/stateSetUp::start');
                 await this.checkAuthorization(dispatch);
 
                 const { actions, redirectTo } = this.getPageOption(pathname);
@@ -131,10 +128,10 @@ class StateSetUpConfig {
                 }
                 await this.callActions(actions, dispatch, getState);
 
-                console.log('app/stateSetUp::end', { pathname, redirectTo });
+                console.info('app/stateSetUp::end', { pathname, redirectTo });
                 return fulfillWithValue(redirectTo === null, null);
             } catch (err) {
-                console.log('app/stateSetUp', err);
+                console.info('app/stateSetUp', err);
                 return rejectWithValue('Something went wrong!');
             }
 

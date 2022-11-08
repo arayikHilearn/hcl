@@ -1,5 +1,3 @@
-import authReducer, { authActionsCreators } from './auth/slice';
-import eventReducer, { eventActionsCreators } from './event/slice';
 import calculateFormReducer, { calculateFormActionCreators } from './calculateForm/slice';
 import postAPI from '../../services/postSevice';
 import { createReducer } from '@reduxjs/toolkit';
@@ -15,16 +13,12 @@ const appReducer = createReducer({ isAppReady: false }, (builder) => {
 const reducers = {
     app: appReducer,
     calculateForm: calculateFormReducer,
-    auth: authReducer,
-    event: eventReducer,
     [postAPI.reducerPath]: postAPI.reducer
 };
 
 export const actionCreators = {
     stateSetUp: stateSetUp.setUp,
     ...calculateFormActionCreators,
-    ...authActionsCreators,
-    ...eventActionsCreators,
 };
 
 export default reducers;

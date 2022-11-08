@@ -1,22 +1,24 @@
 import * as React from 'react';
 import { FC, SVGAttributes } from 'react';
+import { useStyle } from '../../hooks/useStyle';
 
 interface ISvgHome extends SVGAttributes<SVGElement> {
     type?: 'default' | 'monotone'
 }
 
+const { $cAccent, $cAccentDarker } = useStyle([ 'cAccent', 'cAccentDarker' ]) as Record<string, string>;
 const colorsConfig = {
     default: {
         house: '#fff',
         roof: {
-            top: '#C3F84F',
-            front: '#A1D72D'
+            top: $cAccent,
+            front: $cAccentDarker
         },
         window: {
             front: '#EFEFEF',
             out1: '#DEDEDE',
             out2: '#fff',
-            out3: '#A1D72D'
+            out3: $cAccentDarker
         },
         door: {
             out: '#D8D8D9',
@@ -38,6 +40,7 @@ const colorsConfig = {
 
 const SvgHome: FC<ISvgHome> = ({ type = 'default', ...defaultProps }) => {
     const colors = colorsConfig[type];
+
 
     return (
         <svg

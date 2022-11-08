@@ -5,7 +5,6 @@ $lh: calc(19 / 16) * 1em;
 $ff: "Inter";
 $transition: all 0.16s linear;
 
-
 $maxGutter: 15;
 $minGutter: 8;
 $gutter: clamp(calc($minGutter / 10) * 1rem, calc($maxGutter / $maxScreen) * 100%, calc($maxGutter / 10) * 1rem);
@@ -15,5 +14,7 @@ $cLight: #fff;
 $cLightOp: rgba($cLight, 0.6);
 $cDarkOp: rgba($cDark, 0.6);
 $cAccent: #C3F84F;
+$cAccentDarker: mix(black, $cAccent, 13%);
 $cAccentOp: rgba($cAccent, 0.5);
-$cError: #BF0808;
+$cError: #F48181;
+$cBackground: #1F3221;

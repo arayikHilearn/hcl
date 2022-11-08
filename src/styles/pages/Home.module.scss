@@ -12,24 +12,24 @@
 }
 
 .col-1, .col-2 {
-  //flex: 1;
   flex-grow: 1;
 }
 
 .col-1 {
   max-width: 71rem;
   margin-right: calc(24 / $maxContainer) * 100%;
-  //width: 100%;
   justify-content: space-between;
 }
 
 .col-2 {
   max-width: 42.6rem;
   margin: -6.1rem 0;
-  //width: 100%;
-  padding: 6.1rem 2.4rem;
+  padding: 6.1rem calc(24 / $maxContainer) * 100%;
   background-image: url(/assets/images/background-grid-2.png);
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
+  div:first-child {
+    margin-right: 0.8rem;
+  }
 }

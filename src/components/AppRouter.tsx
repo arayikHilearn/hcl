@@ -1,13 +1,11 @@
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { routesConfig } from '../pages';
+import { useRenderWatcher } from '../hooks/useRenderWatcher';
 
 const AppRouter: FC = () => {
 
-    useEffect(() => {
-        console.log('AppRouter::OnMount');
-    }, []);
-
+    useRenderWatcher('AppRouter');
     return (
         <Routes>
             { routesConfig.map(({ path, Element }) => (

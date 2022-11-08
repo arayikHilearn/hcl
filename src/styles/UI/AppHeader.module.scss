@@ -1,3 +1,5 @@
+@import "../config/vars.scss";
+
 .header {
   z-index: 1;
   overflow: hidden;
@@ -6,6 +8,8 @@
   box-shadow: 0 0.4rem 0.4rem rgba(0, 0, 0, 0.25);
   &-bg {
     background-image: url("/assets/images/header-background.png");
+    background-image: url("/assets/images/Background.png");
+    background-color: $cBackground;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center top;

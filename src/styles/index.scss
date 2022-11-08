@@ -1,2 +1,19 @@
 @import "~normalize.css/normalize.css";
 @import "./config";
+
+$cChart1: darken( $cAccent, 25);
+$cChart2: #6BBEFB;
+
+:root {
+  --cAccent: #{$cAccent};
+  --cAccentDarker: #{$cAccentDarker};
+  --cDark: #{$cDark};
+  --cChart1: #{rgba($cChart1, .6)};
+  --cChart2: #{rgba($cChart2, .6 )};
+  --cChartHover1: #{$cChart1};
+  --cChartHover2: #{$cChart2};
+  --ff: #{$ff};
+  --fz: #{$fz};
+  --lh: #{$lh};
+  --maxScreen: #{$maxScreen};
+}

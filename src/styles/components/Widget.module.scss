@@ -1,11 +1,33 @@
 .widget {
-    min-width: 18.1rem;
-    //max-width: 18.1rem;
-    //width: 100%;
+//    min-width: 18.1rem;
+    max-width: 18.1rem;
+    min-width: 17.9rem;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     border-radius: 0.8rem;
-    padding: 1.6rem;
+    padding: 1.6rem calc(16/378) * 100%;
+}
+
+.price {
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: calc(48 / 40) * 1em;
+    margin-bottom: 1.6rem;
+}
+.label {
+    margin-bottom: 0.4rem;
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: 500;
+    line-height: calc(24 / 20) * 1em;
+    margin: 1.6rem 0 0;
+}
+.subtitle {
+    font-weight: 300;
+    margin-top: 0.8rem;
 }

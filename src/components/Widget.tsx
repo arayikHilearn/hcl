@@ -25,18 +25,18 @@ const Widget: FC<IWidgetProps> = ({
     selector
 }) => {
     const price = CURRENCY + numberToShortForm(useAppSelector(selector) as (number | null) || 0);
-    console.log(price, 88);
+
     useRenderWatcher('Widget', [ type, price ]);
     return (
         <div
-            className={ styles.widget }
+            className={ `light-c ${styles.widget}` }
             style={{ backgroundColor: background }}
         >
-            <span>{ label }</span>
-            <span>{ price }</span>
+            <span className={ styles.label }>{ label }</span>
+            <span className={ styles.price }>{ price }</span>
             <HomeIcon type={ type } />
-            <h4>{ title }</h4>
-            <span>{ subTitle }</span>
+            <h4 className={ styles.title }>{ title }</h4>
+            <span className={ styles.subtitle }>{ subTitle }</span>
         </div>
     );
 };
