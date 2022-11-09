@@ -4,22 +4,22 @@
 //! em - first parent tag
 
 html {
-  font-size: calc(10 / $maxScreen) * 100vw;
-  //font-size: #{calc(10 / 16)}rem;
+  //font-size: calc(10 / $maxScreen) * 100vw;
+  font-size: #{calc(10 / 16)}rem;
 }
 
 body {
-  //font-size: $fz;
+  font-size: $fz;
   color: $cDark;
   font-weight: 400;
-  font-size: calc(10 / 16) * 1rem;
+  //font-size: calc(10 / 16) * 1rem;
   font-family: $ff;
   line-height: $lh;
 }
 
-#root {
-  font-size: $fz;
-}
+//#root {
+//  font-size: $fz;
+//}
 
 * {
   box-sizing: border-box;
