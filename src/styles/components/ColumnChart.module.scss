@@ -1,0 +1,58 @@
+@import "../config/vars";
+
+.data-label {
+  position: relative;
+  font-size: 1rem;
+  line-height: #{calc(12/10)}em;
+  padding-left: 1.8rem;
+  //margin-left: 1.8rem;
+  &::before {
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    position: absolute;
+    content: '';
+    display: block;
+  }
+
+  &1::before { //1 is colorIndex
+    background-color: $cChart1;
+  }
+
+  &2::before { //2 is colorIndex
+    background-color: $cChart2;
+  }
+
+}
+
+.chart-wrapper {
+  padding-top: 1.6rem;
+  border: 0.1rem solid $cGrey;
+  border-radius: 0.8rem;
+}
+
+.data-labels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .data-label:first-child {
+    margin-right: 1.6rem;
+  }
+  &-wrapper {
+    padding: 0 1.6rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .title {
+      flex-shrink: 0;
+      //margin: 0 4.7rem 0 0;
+      margin: 0 1.6rem 0 0;
+      font-weight: 700;
+      font-size: 1.6rem;
+    }
+  }
+}

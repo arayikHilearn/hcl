@@ -12,7 +12,7 @@ const initialState: ICalculateForm = {
 };
 
 const calculateFormSlice = createSlice({
-    name: 'auth',
+    name: 'calculateForm',
     initialState,
     reducers: {
         setHomePrice(state, { payload }: PayloadAction<ICalculateForm['homePrice']>) {
@@ -53,4 +53,7 @@ export const calculateFormActionCreators = {
     calculate,
 };
 
-export default calculateFormSlice.reducer;
+export default {
+    name: calculateFormSlice.name,
+    reducer: calculateFormSlice.reducer,
+};

@@ -1,7 +1,9 @@
 $maxScreen: 1440;
 $maxContainer: 1200;
-$fz: 1.6rem;
-$lh: calc(19 / 16) * 1em;
+$fzParent: 10;
+$fzDefault: 16;
+$fz: #{calc(16 / 10)}rem;
+$lh: calc(19 / $fzDefault) * 1em;
 $ff: "Inter";
 $transition: all 0.16s linear;
 
@@ -9,12 +11,16 @@ $maxGutter: 15;
 $minGutter: 8;
 $gutter: clamp(calc($minGutter / 10) * 1rem, calc($maxGutter / $maxScreen) * 100%, calc($maxGutter / 10) * 1rem);
 
-$cDark:  #000;
+$cDark: #000;
+$cDarkOp: rgba($cDark, 0.6);
 $cLight: #fff;
 $cLightOp: rgba($cLight, 0.6);
-$cDarkOp: rgba($cDark, 0.6);
+$cGrey: #F7F7F7;
 $cAccent: #C3F84F;
 $cAccentDarker: mix(black, $cAccent, 13%);
 $cAccentOp: rgba($cAccent, 0.5);
 $cError: #F48181;
 $cBackground: #1F3221;
+
+$cChart1: darken( $cAccent, 25);
+$cChart2: #6BBEFB;

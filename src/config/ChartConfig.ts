@@ -2,11 +2,14 @@ import { useStyle } from '../hooks/useStyle';
 import { Options } from 'highcharts';
 import { CURRENCY } from './index';
 import numberToShortForm from '../utils/numberToShortForm';
+import { WithPrefix } from '../utils/types';
 
 abstract class ChartConfig {
     public data: number[][] = [];
-    public abstract getOptions(data: number[][]): Options
-    abstract readonly type: 'column'
+    public abstract chartSetup(data: number[][]): {
+        options: Options;
+    }
+    abstract readonly type: 'column' | 'line'
 
     //constructor() {}
 }
@@ -19,17 +22,25 @@ interface IAdditionalStyles {
     $chartHeight: number;
 }
 
-type TStyles<T extends string> = (Record<`$${T}`, string> & IAdditionalStyles) | Record<string, never>;
+type TStyles<T extends string> = (Record<WithPrefix<'$', T>, string> & IAdditionalStyles) | Record<string, never>;
 
 export class ColumnChartConfig extends ChartConfig {
     public readonly type = 'column';
     private static defaultStyles = {
-        $chartWidth: 557, //? value=(548 + 9) 548 is width from design and 9 IS FOR FIXATION design issue
-        $pointWidth: 11,
+        $chartWidth: 548,
+        $pointWidth: 10.7,
         $columnInnerPadding: 6,
         $chartPadding: 16,
         $chartHeight: 256,
     };
+    private static stylesList = [
+        'maxScreen', 'maxContainer',
+        'maxGutter', 'minGutter',
+        'cDark', 'fz', 'lh', 'ff',
+        'cChart1', 'cChart2',
+        'cChartFocus1', 'cChartFocus2',
+        'cChartHover1', 'cChartHover2'
+    ] as const;
     private readonly withoutTicksStyles = {
         minorTickLength: 0,
         tickLength: 0,
@@ -38,10 +49,10 @@ export class ColumnChartConfig extends ChartConfig {
         lineColor: 'transparent',
         gridLineColor: 'transparent',
     };
-    private readonly stylesList = [ 'cChart1', 'cChart2', 'cDark', 'fz', 'lh', 'maxContainer', 'ff', 'cChartHover1', 'cChartHover2' ] as const;
-    private styles: TStyles<typeof this.stylesList[number]> = {};
+    private styles: TStyles<typeof ColumnChartConfig.stylesList[number]> = {};
     private maxColumns: number | null = null;
     private categories: string[] = [];
+    private chartOuterWidth: number | null = null;
     private tickInterval = 1;
     private xAxisStyles: Record<string, any> = {};
     private yAxisStyles: Record<string, any> = {};
@@ -65,35 +76,66 @@ export class ColumnChartConfig extends ChartConfig {
         return parseFloat(value) * (type === 'rem' ? 10 : 0);
     }
 
-    private setCssStyles() {
-        const cssStyles = useStyle([ ...this.stylesList ]);
-        (Object.keys(cssStyles) as Array<`$${typeof this.stylesList[number]}`>).forEach((style) => {
-            this.styles[style] = cssStyles[style];
+    private setCssStyles(initialStyles: Partial<Record<WithPrefix<'$'>, string>>) {
+        this.styles = {
+            ...this.styles,
+            ...initialStyles
+        };
+
+        const cssStyles = useStyle([ ...ColumnChartConfig.stylesList ]);
+        (Object.keys(cssStyles) as Array<WithPrefix<'$', typeof ColumnChartConfig.stylesList[number]>>).forEach((style) => {
+            if (!initialStyles[style]) {
+                this.styles[style] = cssStyles[style];
+            }
         });
     }
 
-    private setAdditionalStyles() {
+    private setAdditionalStyles(data: number[][]) {
         const defaultStyles = ColumnChartConfig.defaultStyles;
 
-        (Object.keys(ColumnChartConfig.defaultStyles) as Array<keyof IAdditionalStyles>).forEach((style) => {
+        (Object.keys(defaultStyles) as Array<keyof IAdditionalStyles>).forEach((style) => {
             this.styles[style] = defaultStyles[style];
         });
+        this.data = data;
+        this.maxColumns = data[0].length > data[1].length ? data[0].length : data[1].length;
 
-        this.styles.$chartWidth = window.innerWidth > +this.styles.$maxContainer
-            ? defaultStyles.$chartWidth
-            : (defaultStyles.$chartWidth - defaultStyles.$chartPadding * 2) / +this.styles.$maxContainer * window.innerWidth;
-        this.styles.$pointWidth = defaultStyles.$pointWidth / defaultStyles.$chartWidth * this.styles.$chartWidth;
-        this.styles.$columnInnerPadding = defaultStyles.$columnInnerPadding / defaultStyles.$pointWidth * this.styles.$pointWidth;
-        this.styles.$chartPadding = defaultStyles.$chartPadding / defaultStyles.$chartWidth * this.styles.$chartWidth;
-        //this.styles.$chartHeight = defaultStyles.$chartHeight / defaultStyles.$chartWidth * this.styles.$chartWidth;
+        const containerPadding = window.innerWidth > +this.styles.$maxScreen
+            ? +this.styles.$maxGutter
+            : +this.styles.$maxGutter / +this.styles.$maxScreen * window.innerWidth;
+        const fullContainer = +this.styles.$maxContainer + +this.styles.$maxGutter * 2;
+        const containerWidth = window.innerWidth > fullContainer
+            ? +this.styles.$maxContainer
+            : window.innerWidth - containerPadding * 2;
+        const breakPoint = +this.styles.$maxContainer;
+
+        console.log({ containerWidth, breakPoint, containerPadding }, 777777);
+
+        this.styles.$pointWidth = (containerWidth >= breakPoint
+            ? defaultStyles.$pointWidth
+            : defaultStyles.$pointWidth / fullContainer * containerWidth);
+        this.styles.$columnInnerPadding = (defaultStyles.$columnInnerPadding / defaultStyles.$pointWidth * this.styles.$pointWidth);
+
+        this.styles.$chartPadding = containerWidth >= breakPoint
+            ? defaultStyles.$chartPadding
+            : defaultStyles.$chartPadding / fullContainer * containerWidth;
+
+        this.styles.$chartWidth = this.maxColumns * this.styles.$pointWidth
+            + (this.maxColumns - 1) * this.styles.$columnInnerPadding
+            + this.styles.$chartPadding * 2
+            + this.lhFix('0.9rem', true) + 8; //yAxisTitleWidth + margin
+        this.chartOuterWidth = this.styles.$chartWidth + this.styles.$chartPadding * 2;
     }
 
     private getTickInterval() {
+        console.log(this.data, 9900);
         let maxValue = 0;
         this.data.flat().forEach(value => {
+            // console.log(value, '8786756ghjghjvgv');
             if (value > maxValue) maxValue = value;
         });
         maxValue = Math.floor(maxValue);
+        console.log(10 ** (maxValue.toString().length - 1), 9900);
+        console.log(maxValue, 9900);
 
         return 10 ** (maxValue.toString().length - 1);
     }
@@ -125,10 +167,8 @@ export class ColumnChartConfig extends ChartConfig {
         };
     }
 
-    private setUpChartOptions(data: number[][]) {
-        this.data = data;
-        this.maxColumns = data[0].length > data[1].length ? data[0].length : data[1].length;
-        this.categories = Array.from(Array(this.maxColumns + 1)).map((v, i) => {
+    private setUpChartOptions() {
+        this.categories = Array.from(Array(this.maxColumns)).map((v, i) => {
             if (!i) return '0';
             if (!((i+1) % 5)) return `${i+1}`;
             else return '';
@@ -145,6 +185,7 @@ export class ColumnChartConfig extends ChartConfig {
             $chartPadding: ColumnChartConfig.defaultStyles.$chartPadding,
             $chartHeight: ColumnChartConfig.defaultStyles.$chartHeight,
         },
+        styles: Partial<Record<WithPrefix<'$'>, string>> = {}
     ) {
         super();
 
@@ -153,22 +194,69 @@ export class ColumnChartConfig extends ChartConfig {
             ...options,
         };
 
-        this.setCssStyles();
-
-        console.log(this.styles, 88888);
+        this.setCssStyles(styles);
     }
 
-    public getOptions(data: number[][]) {
-        this.setAdditionalStyles();
-        this.setUpChartOptions(data);
+    private setUpYAxis(yAxisStyles: Record<string, any>) {
+        return { //??????
+            ...this.withoutTicksStyles,
+            //min: 1,
+            //max: 100, //?
+            endOnTick: false,
+            tickInterval: this.tickInterval,
+            offset: 0,
+            left: yAxisStyles.width - yAxisStyles.labels.margin + this.styles.$chartPadding,
+            title: {
+                text: yAxisStyles.title.text,
+                x: -this.lhFix(yAxisStyles.title.fz) - (
+                    yAxisStyles.width
+                    - yAxisStyles.title.margin
+                    - this.parseToNumeric(yAxisStyles.title.fz)
+                ),
+                offset: 0,
+                align: 'middle',
+                textAlign: 'center',
+                style: {
+                    fontSize: yAxisStyles.title.fz,
+                    opacity: 0.4,
+                    color: this.styles.$cDark,
+                },
+            },
+            labels: {
+                step: 1,
+                x: -this.lhFix(yAxisStyles.title.fz),
+                y: 0,
+                style: {
+                    color: this.styles.$cDark,
+                    fontSize: yAxisStyles.labels.fz,
+                    opacity: 0.8
+                },
+                formatter() {
+                    const price = CURRENCY + numberToShortForm(this.value as number);
+                    console.log(444, price);
 
-        const { xAxisStyles, yAxisStyles, categories } = this;
+                    return price;
+                },
+            },
+        } as Options['yAxis'];
+    }
+
+    private getOptions(data: number[][]) {
+        console.log('HOOOOOOOOOOSHHH', data, 888);
+        this.setAdditionalStyles(data);
+        console.log('HOOOOOOOOOOSHHH', this.data);
+
+        this.setUpChartOptions();
+
+        const { xAxisStyles, yAxisStyles, categories, maxColumns, type, tickInterval } = this;
         const {
             $cChart1,
             $cChart2,
             $cDark,
             $ff,
             $fz,
+            $cChartFocus1,
+            $cChartFocus2,
             $cChartHover1,
             $cChartHover2,
             $columnInnerPadding,
@@ -177,6 +265,9 @@ export class ColumnChartConfig extends ChartConfig {
             $chartPadding,
             $chartHeight
         } = this.styles;
+        const yAxis = this.setUpYAxis(yAxisStyles);
+
+        console.log(this.styles, 88888);
 
         const options: Options = {
             // colorAxis: [ {
@@ -211,11 +302,13 @@ export class ColumnChartConfig extends ChartConfig {
                 verticalAlign: 'bottom',
             },
             chart: {
+                //animation: false,
                 //alignTicks: true,
                 //height: 224, //!
                 //styledMode: true,
                 events: {
                     load() {
+                        console.log(tickInterval, 'load');
                         // @ts-ignore
                         console.log(this.yAxis[0].axisTitleMargin, this.yAxis[0], 'load');
                         // this.xAxis[0].update({
@@ -229,14 +322,16 @@ export class ColumnChartConfig extends ChartConfig {
                     },
 
                     redraw() {
+                        console.log(tickInterval, 'redraw');
                         console.log({ this: this.chartWidth }, 'redraw');
                         // this.chartWidth > 580 && this.update({
-                        //     chart: {
+                        //     chartsData: {
                         //         width: 580
                         //     }
                         // });
                     },
                     render() {
+                        console.log(tickInterval, 'render');
                         console.log({  this: this.chartWidth }, 'render');
                     },
                 },
@@ -247,9 +342,9 @@ export class ColumnChartConfig extends ChartConfig {
                 spacingTop: $chartPadding, //*
                 height: $chartHeight,
                 width: $chartWidth + $chartPadding * 2, //*
-                marginRight: 20,
+                // marginRight: 20,
                 style: {
-                    border: '1px solid rgba(233, 45, 4, 60%)', //! for a development
+                    //border: '1px solid rgba(233, 45, 4, 60%)', //! for a development
                     fontFamily: $ff,
                     fontSize: $fz,
                     color: $cDark,
@@ -258,46 +353,7 @@ export class ColumnChartConfig extends ChartConfig {
                 //marginRight: 90
                // margin: [ 20, 20, 20, 20 ],
             },
-            yAxis: { //??????
-                ...this.withoutTicksStyles,
-                //min: 1,
-                //max: 100, //?
-                endOnTick: false,
-                tickInterval: this.tickInterval,
-                offset: 0,
-                left: yAxisStyles.width - yAxisStyles.labels.margin + $chartPadding,
-                title: {
-                    text: yAxisStyles.title.text,
-                    x: -this.lhFix(yAxisStyles.title.fz) - (
-                        yAxisStyles.width
-                        - yAxisStyles.title.margin
-                        - this.parseToNumeric(yAxisStyles.title.fz)
-                    ),
-                    offset: 0,
-                    align: 'middle',
-                    textAlign: 'center',
-                    style: {
-                        fontSize: yAxisStyles.title.fz,
-                        opacity: 0.4,
-                        color: $cDark,
-                    },
-                },
-                labels: {
-                    step: 1,
-                    x: -this.lhFix(yAxisStyles.title.fz),
-                    y: 0,
-                    style: {
-                        color: $cDark,
-                        fontSize: yAxisStyles.labels.fz,
-                        opacity: 0.8
-                    },
-                    formatter() {
-                        const price = CURRENCY + numberToShortForm(this.value as number);
-
-                        return price;
-                    },
-                },
-            },
+            yAxis,
             xAxis: {
                 ...this.withoutTicksStyles,
                 categories,
@@ -348,88 +404,121 @@ export class ColumnChartConfig extends ChartConfig {
             // },
             plotOptions: {
                 column: {
+                    animation: {
+                        duration: 500,
+                    },
                     minPointLength: 3, //* min column length
                     pointPadding: 0,
                     groupPadding: 0,
                     maxPointWidth: 11,
                     pointWidth: $pointWidth,
-                    borderRadius: 10,
+                    borderRadius: 8,
                     grouping: false,
                     borderWidth: 0,
                     dataLabels: {
                         enabled: false,
                     },
-                    events: {
-                        // mouseOver()  {
-                        //     const newCategories = [ ...categories ];
-                        //     newCategories[this.index] = (this.index + 1).toString();
-                        //
-                        //     console.log(this.points, 97865);
-                        //     // this.series.points[0].getLabelConfig().point.update({
-                        //     //     grou: 40,
-                        //     //     label: '23'
-                        //     // });
-                        //     // this.series.xAxis.update({
-                        //     //     labels: {
-                        //     //         x: 0,
-                        //     //         align: 'center'
-                        //     //     }
-                        //     // });
-                        //     // this.series.options({
-                        //     //     labels: {
-                        //     //         x: 0,
-                        //     //         align: 'center'
-                        //     //     }
-                        //     // })
-                        //     //this.series.xAxis.setCategories(newCategories);
-                        //     //this.options..
-                        // }
-                    },
                     point: {
                         events: {
                             mouseOver() {
-                                const newCategories = [ ...categories ];
-                                newCategories[this.index] = (this.index + 1).toString();
+                                console.log(this, 'point--->mouseOver');
+                                const currentSeries = this.series;
+                                const otherSeries = this.series.chart.series[this.series.index ? 0 : 1];
 
-                                this.update({
-                                    color: this.series.index ? $cChartHover1 : $cChartHover2,
+                                const newCategories = Array.from(Array(maxColumns)).map((_, i) => {
+                                    let categoryValue = '';
+
+                                    if (currentSeries.points[i]) {
+                                        let color: string;
+                                        if (i === this.index) {
+                                            categoryValue = (this.index + 1).toString();
+
+                                            color = currentSeries.index
+                                                ? $cChartFocus1
+                                                : $cChartFocus2;
+                                        } else {
+                                            color = currentSeries.index
+                                                ? $cChartHover1
+                                                : $cChartHover2;
+                                        }
+
+                                        currentSeries.points[i].update({ color }, false);
+                                    }
+
+                                    if (otherSeries.points[i]) {
+                                        otherSeries.points[i].update({
+                                            color: otherSeries.index
+                                                ? $cChartHover1
+                                                : $cChartHover2
+                                        }, false);
+                                    }
+
+                                    return categoryValue;
                                 });
-                                this.series.xAxis.setCategories(newCategories);
+
+                                this.series.xAxis.update({
+                                    labels: {
+                                        style: {
+                                            opacity: 1
+                                        }
+                                    }
+                                }, false);
+                                this.series.xAxis.setCategories(newCategories, true);
                             },
                             mouseOut() {
-                                this.update({
-                                    color: this.series.index ? $cChart1 : $cChart2,
+                                const currentSeries = this.series;
+                                const otherSeries = this.series.chart.series[this.series.index ? 0 : 1];
+
+                                Array.from(Array(maxColumns)).forEach((_, i) => {
+                                    if (currentSeries.points[i]) {
+                                        currentSeries.points[i].update({
+                                            color: this.series.index
+                                                ? $cChart1
+                                                : $cChart2
+                                        }, false);
+                                    }
+
+                                    if (otherSeries.points[i]) {
+                                        otherSeries.points[i].update({
+                                            color: this.series.index
+                                                ? $cChart2
+                                                : $cChart1
+                                        }, false);
+                                    }
+
+
                                 });
-                                this.series.xAxis.setCategories(categories);
+
+                                this.series.xAxis.update({
+                                    labels: {
+                                        style: {
+                                            opacity: 0.8
+                                        }
+                                    }
+                                }, false);
+
+                                this.series.xAxis.setCategories(categories, true);
                             }
                         }
                     },
                 },
                 series: {
-                    events: {
-                        mouseOver(ev) {
-                            console.log(ev, 'series--->mouseOver');
-                        }
+                    states: {
+                        inactive: {
+                            opacity: 1,
+                        },
                     },
-                    //connectEnds: true,
-                    //clip: false,
-                    //color: 'red',
-                    dataLabels:{
-                        enabled: true,
-                        // formatter: function() {
-                        //     const pcnt = (this.y /  totals[this.point.index]) * 100;
-                        //     return Highcharts.numberFormat(pcnt, 0) + '%';
-                        // }
-                    }
+                    crisp: false,
+                    shadow: false,
+                    showInLegend: false,
+                    opacity: 1,
                 }
             },
             series: this.data.map((d, i) => {
                 return {
-                    shadow: false,
                     color: i ? $cChart1 : $cChart2,
-                    showInLegend: false,
                     type: this.type,
-                    data: d
+                    data: d,
                 };
             }),
             // responsive:{
@@ -448,4 +537,16 @@ export class ColumnChartConfig extends ChartConfig {
 
         return options;
     }
+
+    public chartSetup = (data: number[][]) => {
+        console.log(222, this);
+        const options = this.getOptions(data);
+
+        return {
+            options,
+            chartOuterWidth: this.chartOuterWidth as number,
+            chartWidth: this.styles.$chartWidth,
+            chartPadding: this.styles.$chartPadding,
+        };
+    };
 }

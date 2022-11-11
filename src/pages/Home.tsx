@@ -43,7 +43,7 @@ const Home: FC = () => {
             </AppHeader>
             <AppSection>
                 <div className="row-sb">
-                    <ColumnChart />
+                    <ColumnChart style={{ marginRight: '0' }} />
                     <ColumnChart />
                 </div>
             </AppSection>

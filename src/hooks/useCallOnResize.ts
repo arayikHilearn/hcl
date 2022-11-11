@@ -1,12 +1,17 @@
 import { useLayoutEffect } from 'react';
 
-export function useCallOnResize(cb: () => void) {
+export function useCallOnResize(cb: () => void, ms?: number) {
     useLayoutEffect(() => {
         let timeoutId: NodeJS.Timeout;
         function updateOnResize() {
+            if (ms === undefined) {
+                cb();
+            } else {
+                timeoutId && clearTimeout(timeoutId);
+                timeoutId = setTimeout(cb, ms);
+            }
             console.log('RESIZE');
-            timeoutId && clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => cb(), 150);
+
         }
 
         window.addEventListener('resize', updateOnResize);

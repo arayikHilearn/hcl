@@ -11,5 +11,5 @@ export const setupStore = () => configureStore({
 });
 
 export type TAppStore = ReturnType<typeof setupStore>;
-export type TRootState = ReturnType<typeof rootReducer>;
+export type TRootState = ReturnType<ReturnType<typeof setupStore>['getState']> //ReturnType<typeof rootReducer>;
 export type TAppDispatch = TAppStore['dispatch'];
