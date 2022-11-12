@@ -9,7 +9,7 @@ import styles from 'src/styles/components/ColumnChart.module.scss';
 import { useAppSelector } from '../../hooks/redux';
 import ChartsSelectors from '../../store/selectors/chartsSelector';
 
-const chartConfig = new ColumnChartConfig();
+const chartConfig = new ColumnChartConfig({ $pointWidth: 10.7 }, { $cDark: 'red' });
 
 
 const ColumnChart: FC<{style?: CSSProperties}> = ({ style = {} }) => {
@@ -24,15 +24,15 @@ const ColumnChart: FC<{style?: CSSProperties}> = ({ style = {} }) => {
     return  (
         <div
             style={ style }
-            className={ styles['chartsData-wrapper'] }
+            className={ styles['chart-wrapper'] }
         >
             <ColumnChartLabels
                 width={ config.chartOuterWidth }
                 padding={ config.chartPadding }
                 title="Yearly payments"
                 dataLabels={ [
-                    { text: 'HCL out of pocket payment', colorIndex: 1 },
-                    { text: 'Conventional out of pocket payment', colorIndex: 2 }
+                    [ { text: 'HCL out of pocket payment', colorIndex: 1, type: 'circle' } ],
+                    [ { text: 'Conventional out of pocket payment', colorIndex: 2, type: 'circle' } ]
                 ] }
             />
             <div style={{ position: 'relative' }}>

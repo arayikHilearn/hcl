@@ -7,6 +7,7 @@ import { calculateForm } from '../store/selectors';
 import { useRenderWatcher } from '../hooks/useRenderWatcher';
 import AppSection from '../components/UI/AppSection';
 import ColumnChart from '../components/Charts/ColumnChart';
+import LineChart from '../components/Charts/LineChart';
 
 const Home: FC = () => {
     useRenderWatcher('Home');
@@ -43,8 +44,8 @@ const Home: FC = () => {
             </AppHeader>
             <AppSection>
                 <div className="row-sb">
-                    <ColumnChart style={{ marginRight: '0' }} />
                     <ColumnChart />
+                    <LineChart />
                 </div>
             </AppSection>
         </>

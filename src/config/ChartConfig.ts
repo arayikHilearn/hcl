@@ -3,16 +3,7 @@ import { Options } from 'highcharts';
 import { CURRENCY } from './index';
 import numberToShortForm from '../utils/numberToShortForm';
 import { WithPrefix } from '../utils/types';
-
-abstract class ChartConfig {
-    public data: number[][] = [];
-    public abstract chartSetup(data: number[][]): {
-        options: Options;
-    }
-    abstract readonly type: 'column' | 'line'
-
-    //constructor() {}
-}
+import Highcharts from 'highcharts';
 
 interface IAdditionalStyles {
     $chartWidth: number;
@@ -23,24 +14,19 @@ interface IAdditionalStyles {
 }
 
 type TStyles<T extends string> = (Record<WithPrefix<'$', T>, string> & IAdditionalStyles) | Record<string, never>;
+type TCssStyles<T extends string> = (Record<WithPrefix<'$', T>, string>) | Record<string, never>;
+export type GetArrayElementType<T extends readonly any[]> = T extends readonly (infer U)[] ? U : never;
 
-export class ColumnChartConfig extends ChartConfig {
-    public readonly type = 'column';
-    private static defaultStyles = {
-        $chartWidth: 548,
-        $pointWidth: 10.7,
-        $columnInnerPadding: 6,
-        $chartPadding: 16,
-        $chartHeight: 256,
-    };
-    private static stylesList = [
-        'maxScreen', 'maxContainer',
-        'maxGutter', 'minGutter',
+
+abstract class ChartConfig {
+    protected static cssStylesListDefault = [
         'cDark', 'fz', 'lh', 'ff',
         'cChart1', 'cChart2',
         'cChartFocus1', 'cChartFocus2',
         'cChartHover1', 'cChartHover2'
     ] as const;
+    protected static cssStylesList: GetArrayElementType<Array<unknown>>;
+
     private readonly withoutTicksStyles = {
         minorTickLength: 0,
         tickLength: 0,
@@ -49,15 +35,24 @@ export class ColumnChartConfig extends ChartConfig {
         lineColor: 'transparent',
         gridLineColor: 'transparent',
     };
-    private styles: TStyles<typeof ColumnChartConfig.stylesList[number]> = {};
-    private maxColumns: number | null = null;
-    private categories: string[] = [];
-    private chartOuterWidth: number | null = null;
-    private tickInterval = 1;
-    private xAxisStyles: Record<string, any> = {};
-    private yAxisStyles: Record<string, any> = {};
 
-    private lhFix(
+    public data: number[][] = [];
+
+    protected tickInterval = 1;
+    protected maxColumns = 0;
+    protected categories: string[] = [];
+    protected xAxisStyles: Record<string, any> = {};
+    protected yAxisStyles: Record<string, any> = {};
+    protected chartOuterWidth: number | null = null;
+
+    abstract readonly type: 'column' | 'line' | 'area'
+    protected abstract styles: TStyles<string & typeof ChartConfig.cssStylesListDefault[number]>
+
+    public abstract chartSetup(data: number[][] | {line: number[][], area: number[][]}): {
+        options: Options;
+    }
+
+    protected lhFix(
         value: number | string,
         full = false,
         { type }: { type: 'rem' | 'px' } = { type: 'rem' }
@@ -71,141 +66,21 @@ export class ColumnChartConfig extends ChartConfig {
 
         return full ? fixedValue + numericValue : fixedValue;
     }
-
-    private parseToNumeric(value: string, { type }: { type: 'rem' | 'px' } = { type: 'rem' }) {
+    protected parseToNumeric(value: string, { type }: { type: 'rem' | 'px' } = { type: 'rem' }) {
         return parseFloat(value) * (type === 'rem' ? 10 : 0);
     }
 
-    private setCssStyles(initialStyles: Partial<Record<WithPrefix<'$'>, string>>) {
-        this.styles = {
-            ...this.styles,
-            ...initialStyles
-        };
+    protected setupYAxis() {
+        const { withoutTicksStyles, tickInterval, yAxisStyles, styles: { $chartPadding, $cDark } } = this;
 
-        const cssStyles = useStyle([ ...ColumnChartConfig.stylesList ]);
-        (Object.keys(cssStyles) as Array<WithPrefix<'$', typeof ColumnChartConfig.stylesList[number]>>).forEach((style) => {
-            if (!initialStyles[style]) {
-                this.styles[style] = cssStyles[style];
-            }
-        });
-    }
-
-    private setAdditionalStyles(data: number[][]) {
-        const defaultStyles = ColumnChartConfig.defaultStyles;
-
-        (Object.keys(defaultStyles) as Array<keyof IAdditionalStyles>).forEach((style) => {
-            this.styles[style] = defaultStyles[style];
-        });
-        this.data = data;
-        this.maxColumns = data[0].length > data[1].length ? data[0].length : data[1].length;
-
-        const containerPadding = window.innerWidth > +this.styles.$maxScreen
-            ? +this.styles.$maxGutter
-            : +this.styles.$maxGutter / +this.styles.$maxScreen * window.innerWidth;
-        const fullContainer = +this.styles.$maxContainer + +this.styles.$maxGutter * 2;
-        const containerWidth = window.innerWidth > fullContainer
-            ? +this.styles.$maxContainer
-            : window.innerWidth - containerPadding * 2;
-        const breakPoint = +this.styles.$maxContainer;
-
-        console.log({ containerWidth, breakPoint, containerPadding }, 777777);
-
-        this.styles.$pointWidth = (containerWidth >= breakPoint
-            ? defaultStyles.$pointWidth
-            : defaultStyles.$pointWidth / fullContainer * containerWidth);
-        this.styles.$columnInnerPadding = (defaultStyles.$columnInnerPadding / defaultStyles.$pointWidth * this.styles.$pointWidth);
-
-        this.styles.$chartPadding = containerWidth >= breakPoint
-            ? defaultStyles.$chartPadding
-            : defaultStyles.$chartPadding / fullContainer * containerWidth;
-
-        this.styles.$chartWidth = this.maxColumns * this.styles.$pointWidth
-            + (this.maxColumns - 1) * this.styles.$columnInnerPadding
-            + this.styles.$chartPadding * 2
-            + this.lhFix('0.9rem', true) + 8; //yAxisTitleWidth + margin
-        this.chartOuterWidth = this.styles.$chartWidth + this.styles.$chartPadding * 2;
-    }
-
-    private getTickInterval() {
-        console.log(this.data, 9900);
-        let maxValue = 0;
-        this.data.flat().forEach(value => {
-            // console.log(value, '8786756ghjghjvgv');
-            if (value > maxValue) maxValue = value;
-        });
-        maxValue = Math.floor(maxValue);
-        console.log(10 ** (maxValue.toString().length - 1), 9900);
-        console.log(maxValue, 9900);
-
-        return 10 ** (maxValue.toString().length - 1);
-    }
-
-    private setAxesStyles() {
-        this.xAxisStyles = {
-            width: (this.maxColumns as number) * this.styles.$pointWidth + ((this.maxColumns as number) - 1) * this.styles.$columnInnerPadding,
-            labels: {
-                fz: '1rem',
-                margin: this.parseToNumeric('0.8rem')
-            },
-            title: {
-                text: 'Year',
-                fz: '0.9rem',
-                margin: this.parseToNumeric('0.8rem')
-            }
-        };
-        this.yAxisStyles = {
-            width: this.styles.$chartWidth - this.xAxisStyles.width,
-            labels: {
-                fz: '1rem',
-                margin: this.parseToNumeric('0.8rem')
-            },
-            title: {
-                text: 'Payments',
-                fz: '0.9rem',
-                margin: this.parseToNumeric('0.8rem')
-            }
-        };
-    }
-
-    private setUpChartOptions() {
-        this.categories = Array.from(Array(this.maxColumns)).map((v, i) => {
-            if (!i) return '0';
-            if (!((i+1) % 5)) return `${i+1}`;
-            else return '';
-        });
-        this.tickInterval = this.getTickInterval();
-        this.setAxesStyles();
-    }
-
-    constructor(
-        options: Partial<IAdditionalStyles> = {
-            $columnInnerPadding: ColumnChartConfig.defaultStyles.$columnInnerPadding,
-            $chartWidth: ColumnChartConfig.defaultStyles.$chartWidth,
-            $pointWidth: ColumnChartConfig.defaultStyles.$pointWidth,
-            $chartPadding: ColumnChartConfig.defaultStyles.$chartPadding,
-            $chartHeight: ColumnChartConfig.defaultStyles.$chartHeight,
-        },
-        styles: Partial<Record<WithPrefix<'$'>, string>> = {}
-    ) {
-        super();
-
-        ColumnChartConfig.defaultStyles = {
-            ...ColumnChartConfig.defaultStyles,
-            ...options,
-        };
-
-        this.setCssStyles(styles);
-    }
-
-    private setUpYAxis(yAxisStyles: Record<string, any>) {
         return { //??????
-            ...this.withoutTicksStyles,
+            ...withoutTicksStyles,
             //min: 1,
             //max: 100, //?
             endOnTick: false,
-            tickInterval: this.tickInterval,
+            tickInterval: tickInterval,
             offset: 0,
-            left: yAxisStyles.width - yAxisStyles.labels.margin + this.styles.$chartPadding,
+            left: yAxisStyles.width - yAxisStyles.labels.margin + $chartPadding,
             title: {
                 text: yAxisStyles.title.text,
                 x: -this.lhFix(yAxisStyles.title.fz) - (
@@ -219,7 +94,7 @@ export class ColumnChartConfig extends ChartConfig {
                 style: {
                     fontSize: yAxisStyles.title.fz,
                     opacity: 0.4,
-                    color: this.styles.$cDark,
+                    color: $cDark,
                 },
             },
             labels: {
@@ -227,63 +102,83 @@ export class ColumnChartConfig extends ChartConfig {
                 x: -this.lhFix(yAxisStyles.title.fz),
                 y: 0,
                 style: {
-                    color: this.styles.$cDark,
+                    color: $cDark,
                     fontSize: yAxisStyles.labels.fz,
                     opacity: 0.8
                 },
                 formatter() {
                     const price = CURRENCY + numberToShortForm(this.value as number);
-                    console.log(444, price);
 
                     return price;
                 },
             },
         } as Options['yAxis'];
     }
+    protected setupXAxis() {
+        const { categories, withoutTicksStyles, xAxisStyles, yAxisStyles, styles: { $columnInnerPadding, $chartPadding, $cDark } } = this;
 
-    private getOptions(data: number[][]) {
-        console.log('HOOOOOOOOOOSHHH', data, 888);
-        this.setAdditionalStyles(data);
-        console.log('HOOOOOOOOOOSHHH', this.data);
+        return {
+            ...withoutTicksStyles,
+            categories,
+            width: xAxisStyles.width + $columnInnerPadding,
+            tickInterval: 1, //*
+            left: this.lhFix(xAxisStyles.title.fz)
+                + yAxisStyles.width
+                - $columnInnerPadding
+                + $chartPadding,
+            offset: this.lhFix(xAxisStyles.labels.fz, true) + xAxisStyles.labels.margin, //*
+            endOnTick: true,
+            title: {
+                text: xAxisStyles.title.text,
+                offset: xAxisStyles.title.margin + this.lhFix(xAxisStyles.title.fz), //*
+                y: -this.lhFix(xAxisStyles.title.fz), //*
+                style: {
+                    fontSize: xAxisStyles.title.fz,
+                    opacity: 0.4,
+                    color: $cDark
+                },
+            },
+            labels: {
+                formatter() {
+                    if (this.value === '0') {
+                        return `<tspan dx="${-$columnInnerPadding}" style="text-anchor: end">${this.value}</tspan>`;
+                    }
 
-        this.setUpChartOptions();
+                    return this.value as string;
+                },
+                x: 0,
+                y: -this.lhFix(xAxisStyles.labels.fz), //*
+                style: {
+                    opacity: 0.8,
+                    color: $cDark,
+                    fontSize: xAxisStyles.labels.fz,
+                },
+                align: 'center',
+                step: 1,
+            },
+        } as Options['xAxis'];
+    }
+    protected setupChart() {
+        const { xAxisStyles: { title, labels }, styles: { $chartPadding, $chartHeight, $chartWidth, $ff, $fz, $cDark } } = this;
 
-        const { xAxisStyles, yAxisStyles, categories, maxColumns, type, tickInterval } = this;
-        const {
-            $cChart1,
-            $cChart2,
-            $cDark,
-            $ff,
-            $fz,
-            $cChartFocus1,
-            $cChartFocus2,
-            $cChartHover1,
-            $cChartHover2,
-            $columnInnerPadding,
-            $chartWidth,
-            $pointWidth,
-            $chartPadding,
-            $chartHeight
-        } = this.styles;
-        const yAxis = this.setUpYAxis(yAxisStyles);
-
-        console.log(this.styles, 88888);
-
-        const options: Options = {
-            // colorAxis: [ {
-            //     maxColor: '#000fb0',
-            //     minColor: '#e3e5ff',
-            //     labels: {
-            //         format: '{value}%'
-            //     },
-            //     reversed: true
-            // }, {
-            //     minColor: '#ffece8',
-            //     maxColor: '#8a1900',
-            //     labels: {
-            //         format: '{value}%'
-            //     }
-            // } ],
+        return {
+            spacingLeft: 0, //*
+            spacingRight: 0, //*
+            spacingBottom: $chartPadding, //*
+            spacingTop: $chartPadding, //*
+            height: $chartHeight + $chartPadding * 2,
+            width: $chartWidth + $chartPadding * 2, //*
+            // marginRight: 20,
+            style: {
+                //border: '1px solid rgba(233, 45, 4, 60%)', //! for a development
+                fontFamily: $ff,
+                fontSize: $fz,
+                color: $cDark,
+            }
+        } as Options['chart'];
+    }
+    protected setupDefaultOptions() {
+        return {
             accessibility: {
                 enabled: false
             },
@@ -296,104 +191,191 @@ export class ColumnChartConfig extends ChartConfig {
             subtitle: {
                 text: ''
             },
-            legend: {
-                layout: 'vertical',
-                align: 'center',
-                verticalAlign: 'bottom',
-            },
-            chart: {
-                //animation: false,
-                //alignTicks: true,
-                //height: 224, //!
-                //styledMode: true,
-                events: {
-                    load() {
-                        console.log(tickInterval, 'load');
-                        // @ts-ignore
-                        console.log(this.yAxis[0].axisTitleMargin, this.yAxis[0], 'load');
-                        // this.xAxis[0].update({
-                        //     // @ts-ignore
-                        //     left: this.yAxis[0].axisTitleMargin + 11 + 8 + 8
-                        // });
-                        // this.yAxis[0].update({
-                        //     // @ts-ignore
-                        //     left: this.yAxis[0].axisTitleMargin + 11 + 8
-                        // });
-                    },
+        } as Pick<Options, 'accessibility' | 'credits' | 'title' | 'subtitle'>;
+    }
 
-                    redraw() {
-                        console.log(tickInterval, 'redraw');
-                        console.log({ this: this.chartWidth }, 'redraw');
-                        // this.chartWidth > 580 && this.update({
-                        //     chartsData: {
-                        //         width: 580
-                        //     }
-                        // });
-                    },
-                    render() {
-                        console.log(tickInterval, 'render');
-                        console.log({  this: this.chartWidth }, 'render');
-                    },
-                },
-                type: this.type,
-                spacingLeft: 0, //*
-                spacingRight: 0, //*
-                spacingBottom: $chartPadding, //*
-                spacingTop: $chartPadding, //*
-                height: $chartHeight,
-                width: $chartWidth + $chartPadding * 2, //*
-                // marginRight: 20,
-                style: {
-                    //border: '1px solid rgba(233, 45, 4, 60%)', //! for a development
-                    fontFamily: $ff,
-                    fontSize: $fz,
-                    color: $cDark,
-                },
-                //marginLeft: 90,
-                //marginRight: 90
-               // margin: [ 20, 20, 20, 20 ],
+    protected setTickInterval() {
+        let maxValue = 0;
+        this.data.flat().forEach(value => {
+            if (value > maxValue) maxValue = value;
+        });
+        maxValue = Math.floor(maxValue);
+
+        if (maxValue < 10 ** 6) {
+            this.tickInterval = 10 ** (maxValue.toString().length - 1);
+        } else {
+            this.tickInterval = 250000;
+        }
+    }
+    protected setAxesStyles() {
+        const { maxColumns, styles: { $pointWidth, $columnInnerPadding, $chartWidth } } = this;
+
+        this.xAxisStyles = {
+            width: maxColumns * $pointWidth + (maxColumns - 1) * $columnInnerPadding,
+            labels: {
+                fz: '1rem',
+                margin: this.parseToNumeric('0.8rem')
             },
+            title: {
+                text: 'Year',
+                fz: '0.9rem',
+                margin: this.parseToNumeric('0.8rem')
+            }
+        };
+        this.yAxisStyles = {
+            width: $chartWidth - this.xAxisStyles.width,
+            labels: {
+                fz: '1rem',
+                margin: this.parseToNumeric('0.8rem')
+            },
+            title: {
+                text: 'Payments',
+                fz: '0.9rem',
+                margin: this.parseToNumeric('0.8rem')
+            }
+        };
+    }
+    protected setupChartOptions(data: number[][]) {
+        this.data = data;
+        data.forEach((d) => {
+            d.length > this.maxColumns && (this.maxColumns = d.length);
+        });
+        this.categories = Array.from(Array(this.maxColumns)).map((v, i) => {
+            if (!i) return '0';
+            if (!((i+1) % 5)) return `${i+1}`;
+            else return '';
+        });
+        this.setTickInterval();
+    }
+    protected setupCssStyles<T extends typeof ChartConfig.cssStylesListDefault[number]>(
+        cssStylesList: string[], cssExtraStyles: Partial<Record<WithPrefix<'$'>, string>>, defaultStyles: IAdditionalStyles
+    ) {
+        //*setup default styles
+        (Object.keys(defaultStyles) as Array<keyof IAdditionalStyles>).forEach((style) => {
+            this.styles[style] = defaultStyles[style];
+        });
+
+        //* get styles from cssStylesList
+        const cssStyles = useStyle(cssStylesList);
+        (Object.keys(cssStyles) as Array<WithPrefix<'$', T>>).forEach((style) => {
+            this.styles[style] = cssStyles[style];
+        });
+
+        //* override style with cssExtraStyles
+        this.styles = {
+            ...this.styles,
+            ...cssExtraStyles
+        };
+
+        console.log('setupCssStyles', this.styles);
+    }
+
+    //constructor() {}
+}
+
+export class ColumnChartConfig<T extends string> extends ChartConfig {
+    private static defaultStyles: IAdditionalStyles = {
+        $chartWidth: 0, //548,
+        $pointWidth: 10.7,
+        $columnInnerPadding: 6,
+        $chartPadding: 16,
+        $chartHeight: 224,
+    };
+
+    public readonly type = 'column';
+    protected static cssStylesList = [
+        ...ChartConfig.cssStylesListDefault,
+        'maxScreen', 'maxContainer',
+        'maxGutter', 'minGutter',
+    ] as const;
+    protected styles: TStyles<typeof ColumnChartConfig.cssStylesList[number]> = {};
+
+    private setAdditionalStyles() {
+        const { defaultStyles } = ColumnChartConfig;
+        const { styles, maxColumns } = this;
+
+        //?
+        const containerPadding = window.innerWidth > +this.styles.$maxScreen
+            ? +styles.$maxGutter
+            : +styles.$maxGutter / +styles.$maxScreen * window.innerWidth;
+        const fullContainer = +styles.$maxContainer + +styles.$maxGutter * 2;
+        const containerWidth = window.innerWidth > fullContainer
+            ? +styles.$maxContainer
+            : window.innerWidth - containerPadding * 2;
+        const breakPoint = +styles.$maxContainer;
+        //?
+
+        console.log({ containerWidth, breakPoint, containerPadding }, 777777);
+
+        this.styles.$pointWidth = (containerWidth >= breakPoint
+            ? defaultStyles.$pointWidth
+            : defaultStyles.$pointWidth / fullContainer * containerWidth);
+        this.styles.$columnInnerPadding = (defaultStyles.$columnInnerPadding / defaultStyles.$pointWidth * styles.$pointWidth);
+
+        this.styles.$chartPadding = containerWidth >= breakPoint
+            ? defaultStyles.$chartPadding
+            : defaultStyles.$chartPadding / fullContainer * containerWidth;
+
+        this.styles.$chartWidth = maxColumns * styles.$pointWidth
+            + (maxColumns - 1) * styles.$columnInnerPadding
+            + styles.$chartPadding * 2
+            + this.lhFix('0.9rem', true) + 10; //yAxisTitleWidth + margin
+        this.chartOuterWidth = styles.$chartWidth + styles.$chartPadding * 2;
+    }
+
+    constructor(
+        defaultStyles: Partial<IAdditionalStyles> = {
+            $columnInnerPadding: ColumnChartConfig.defaultStyles.$columnInnerPadding,
+            $chartWidth: ColumnChartConfig.defaultStyles.$chartWidth,
+            $pointWidth: ColumnChartConfig.defaultStyles.$pointWidth,
+            $chartPadding: ColumnChartConfig.defaultStyles.$chartPadding,
+            $chartHeight: ColumnChartConfig.defaultStyles.$chartHeight,
+        },
+        cssExtraStyles: Partial<TCssStyles<typeof ColumnChartConfig.cssStylesList[number]>> = {}
+    ) {
+        super();
+
+        //* revert default styles
+        ColumnChartConfig.defaultStyles = {
+            ...ColumnChartConfig.defaultStyles,
+            ...defaultStyles,
+        };
+
+        this.setupCssStyles([ ...ColumnChartConfig.cssStylesList ], cssExtraStyles, ColumnChartConfig.defaultStyles);
+    }
+
+    private getOptions(data: number[][]) {
+        this.setupChartOptions(data);
+        this.setAdditionalStyles();
+        this.setAxesStyles();
+
+        const { categories, maxColumns, type } = this;
+        const {
+            $cChart1,
+            $cChart2,
+            $cChartFocus1,
+            $cChartFocus2,
+            $cChartHover1,
+            $cChartHover2,
+            $pointWidth,
+        } = this.styles;
+        const defaultOptions = this.setupDefaultOptions();
+        const chart = this.setupChart();
+        const yAxis = this.setupYAxis();
+        const xAxis = this.setupXAxis();
+
+        console.log(this.styles, 88888);
+
+        return {
+            ...defaultOptions,
+            // legend: {
+            //     layout: 'vertical',
+            //     align: 'center',
+            //     verticalAlign: 'bottom',
+            // },
+            chart,
             yAxis,
-            xAxis: {
-                ...this.withoutTicksStyles,
-                categories,
-                width: xAxisStyles.width + $columnInnerPadding,
-                tickInterval: 1, //*
-                left: this.lhFix(xAxisStyles.title.fz)
-                    + yAxisStyles.width
-                    - $columnInnerPadding
-                    + $chartPadding,
-                offset: this.lhFix(xAxisStyles.labels.fz, true) + xAxisStyles.labels.margin, //*
-                endOnTick: true,
-                title: {
-                    text: xAxisStyles.title.text,
-                    offset: xAxisStyles.title.margin + this.lhFix(xAxisStyles.title.fz), //*
-                    y: -this.lhFix(xAxisStyles.title.fz), //*
-                    style: {
-                        fontSize: xAxisStyles.title.fz,
-                        opacity: 0.4,
-                        color: $cDark
-                    },
-                },
-                labels: {
-                    formatter() {
-                        if (this.value === '0') {
-                            return `<tspan dx="${-$columnInnerPadding}" style="text-anchor: end">${this.value}</tspan>`;
-                        }
-
-                        return this.value as string;
-                    },
-                    x: 0,
-                    y: -this.lhFix(xAxisStyles.labels.fz), //*
-                    style: {
-                        opacity: 0.8,
-                        color: $cDark,
-                        fontSize: xAxisStyles.labels.fz,
-                    },
-                    align: 'center',
-                    step: 1,
-                },
-            },
+            xAxis,
             // tooltip: {
             //     headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
             //     pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
@@ -407,10 +389,10 @@ export class ColumnChartConfig extends ChartConfig {
                     animation: {
                         duration: 500,
                     },
-                    minPointLength: 3, //* min column length
+                    minPointLength: 4, //* min column length
                     pointPadding: 0,
                     groupPadding: 0,
-                    maxPointWidth: 11,
+                    maxPointWidth: ColumnChartConfig.defaultStyles.$pointWidth,
                     pointWidth: $pointWidth,
                     borderRadius: 8,
                     grouping: false,
@@ -421,7 +403,6 @@ export class ColumnChartConfig extends ChartConfig {
                     point: {
                         events: {
                             mouseOver() {
-                                console.log(this, 'point--->mouseOver');
                                 const currentSeries = this.series;
                                 const otherSeries = this.series.chart.series[this.series.index ? 0 : 1];
 
@@ -514,28 +495,14 @@ export class ColumnChartConfig extends ChartConfig {
                     opacity: 1,
                 }
             },
-            series: this.data.map((d, i) => {
+            series: data.map((d, i) => {
                 return {
                     color: i ? $cChart1 : $cChart2,
-                    type: this.type,
+                    type,
                     data: d,
                 };
             }),
-            // responsive:{
-            //     rules:[ {
-            //         //chartOptions:undefined
-            //         condition:{
-            //             //callback:undefined
-            //             //maxHeight:undefined
-            //             maxWidth:800,
-            //             // minHeight:0
-            //             minWidth: 7000
-            //         }
-            //     } ]
-            // }
-        };
-
-        return options;
+        } as Options;
     }
 
     public chartSetup = (data: number[][]) => {
@@ -544,6 +511,198 @@ export class ColumnChartConfig extends ChartConfig {
 
         return {
             options,
+            chartOuterWidth: this.chartOuterWidth as number,
+            chartWidth: this.styles.$chartWidth,
+            chartPadding: this.styles.$chartPadding,
+        };
+    };
+}
+
+export class LineChartConfig extends ChartConfig {
+    private static defaultStyles = {
+        $chartWidth: 548,
+        $pointWidth: 10.7,
+        $columnInnerPadding: 6,
+        $chartPadding: 16,
+        $chartHeight: 224,
+    };
+
+    public readonly type = 'area';
+    protected static cssStylesList = [
+        ...ChartConfig.cssStylesListDefault,
+        'maxScreen', 'maxContainer',
+        'maxGutter', 'minGutter',
+    ] as const;
+    protected styles: TStyles<typeof LineChartConfig.cssStylesList[number]> = {};
+
+    private setAdditionalStyles() {
+        const { defaultStyles } = LineChartConfig;
+        const { styles, maxColumns } = this;
+
+        //?
+        const containerPadding = window.innerWidth > +this.styles.$maxScreen
+            ? +styles.$maxGutter
+            : +styles.$maxGutter / +styles.$maxScreen * window.innerWidth;
+        const fullContainer = +styles.$maxContainer + +styles.$maxGutter * 2;
+        const containerWidth = window.innerWidth > fullContainer
+            ? +styles.$maxContainer
+            : window.innerWidth - containerPadding * 2;
+        const breakPoint = +styles.$maxContainer;
+        //?
+
+        console.log({ containerWidth, breakPoint, containerPadding }, 777777);
+
+        this.styles.$pointWidth = (containerWidth >= breakPoint
+            ? defaultStyles.$pointWidth
+            : defaultStyles.$pointWidth / fullContainer * containerWidth);
+        this.styles.$columnInnerPadding = (defaultStyles.$columnInnerPadding / defaultStyles.$pointWidth * styles.$pointWidth);
+
+        this.styles.$chartPadding = containerWidth >= breakPoint
+            ? defaultStyles.$chartPadding
+            : defaultStyles.$chartPadding / fullContainer * containerWidth;
+
+        this.styles.$chartWidth = maxColumns * styles.$pointWidth
+            + (maxColumns - 1) * styles.$columnInnerPadding
+            + styles.$chartPadding * 2
+            + this.lhFix('0.9rem', true) + 10; //yAxisTitleWidth + margin
+        this.chartOuterWidth = styles.$chartWidth + styles.$chartPadding * 2;
+    }
+
+    constructor(
+        defaultStyles: Partial<IAdditionalStyles> = {
+            $columnInnerPadding: LineChartConfig.defaultStyles.$columnInnerPadding,
+            $chartWidth: LineChartConfig.defaultStyles.$chartWidth,
+            $pointWidth: LineChartConfig.defaultStyles.$pointWidth,
+            $chartPadding: LineChartConfig.defaultStyles.$chartPadding,
+            $chartHeight: LineChartConfig.defaultStyles.$chartHeight,
+        },
+        cssExtraStyles: Partial<TCssStyles<typeof LineChartConfig.cssStylesList[number]>> = {}
+    ) {
+        super();
+
+        //* revert default styles
+        LineChartConfig.defaultStyles = {
+            ...LineChartConfig.defaultStyles,
+            ...defaultStyles,
+        };
+
+        this.setupCssStyles([ ...LineChartConfig.cssStylesList ], cssExtraStyles, LineChartConfig.defaultStyles);
+        //this.setCssStyles(styles, defaultStyles);
+    }
+
+
+    private getOptions(lineData: number[][], areaData: number[][]) {
+        this.setupChartOptions([ ...lineData, ...areaData ]);
+        this.setAdditionalStyles();
+        this.setAxesStyles();
+
+        const { categories, maxColumns, type, tickInterval } = this;
+        const {
+            $cChart1,
+            $cChart2,
+            $cDark,
+            $ff,
+            $fz,
+            $cChartFocus1,
+            $cChartFocus2,
+            $cChartHover1,
+            $cChartHover2,
+            $columnInnerPadding,
+            $chartWidth,
+            $pointWidth,
+            $chartPadding,
+            $chartHeight
+        } = this.styles;
+        const defaultOptions = this.setupDefaultOptions();
+        const chart = this.setupChart();
+        const yAxis = this.setupYAxis();
+        const xAxis = this.setupXAxis();
+
+        return {
+            ...defaultOptions,
+            chart,
+            yAxis,
+            xAxis,
+            tooltip: {
+                split: true,
+                formatter(tooltip) {
+                    tooltip.chart.series;
+                    console.log(tooltip.chart.series, 'formatter');
+                    //return ' aa';
+                    const p = this.points?.[0];
+                    console.log(this);
+                    return 'Country: <strong>' + p?.series?.name + '</strong>'
+                        + '<br />Year: <strong>' + this.x + '</strong>'
+                        + '<br />Quantity: <strong>' + p?.y + '</strong>';
+                }
+            },
+            plotOptions: {
+                //pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.percentage:.1f}%</b> ({point.y:,.1f} billion Gt)<br/>',
+                area: {
+                    fillColor: {
+                        linearGradient: {
+                            x1: 0,
+                            y1: 0,
+                            x2: 0,
+                            y2: 1
+                        },
+                        stops: [
+                            //@ts-ignore
+                            [ 0, Highcharts.getOptions().colors[0] ],
+                            //@ts-ignore
+                            [ 1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba') ]
+                        ]
+                    },
+                    marker: {
+                        radius: 2
+                    },
+                    lineWidth: 1,
+                    states: {
+                        hover: {
+                            lineWidth: 1
+                        }
+                    },
+                    threshold: null
+                },
+                series: {
+                    // states: {
+                    //     inactive: {
+                    //         opacity: 1,
+                    //     },
+                    // },
+                    // crisp: false,
+                    // shadow: false,
+                    showInLegend: false,
+                    //opacity: 1,
+                }
+            },
+            series: [
+                ...lineData.map((d, i) => {
+                    return {
+                        dashStyle: 'Dash',
+                        color: i ? $cChart1 : $cChart2,
+                        type: 'line',
+                        data: d,
+                    };
+                }),
+                ...areaData.map((d, i) => {
+                    return {
+                        //dashStyle: 'Dash',
+                        color: i ? $cChart1 : $cChart2,
+                        type: 'area',
+                        data: d,
+                    };
+                })
+            ]
+        } as Options;
+    }
+
+    public chartSetup = ({ line, area }: { line: number[][], area: number[][] }) => {
+        console.log(222, this);
+        const options = this.getOptions(line, area);
+
+        return {
+            options: options,
             chartOuterWidth: this.chartOuterWidth as number,
             chartWidth: this.styles.$chartWidth,
             chartPadding: this.styles.$chartPadding,
