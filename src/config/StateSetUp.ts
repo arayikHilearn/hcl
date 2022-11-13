@@ -2,6 +2,9 @@ import { AnyAction, createAsyncThunk, ThunkAction, ThunkDispatch } from '@reduxj
 import { NavigateFunction } from 'react-router-dom';
 import { ERoutes } from '../pages';
 import { TRootState } from '../store';
+import { calculate } from '../store/reducers/calculateForm/actionCreators';
+import { ICalculateForm } from '../store/reducers/calculateForm';
+import { calculateFormActionCreators } from '../store/reducers/calculateForm/slice';
 
 const pagesConfig: Record<string, Partial<IPageOptions>> = {
     // [ERoutes.POST]: {
@@ -18,11 +21,20 @@ const pagesConfig: Record<string, Partial<IPageOptions>> = {
     [ERoutes.HOME]: {
         //authRequirement: true,
         actions: [
-            // {
-            //     cb: eventActionsCreators.fetchEvents,
-            //     canRefetch: true,
-            //     async: true
-            // },
+            {
+                cb: calculateFormActionCreators.setHomePrice.bind(null, 12312),
+            },
+            {
+                cb: calculateFormActionCreators.setCashAvailable.bind(null, 2831.76),
+            },
+            {
+                cb: calculateFormActionCreators.setInterestRate.bind(null, 0.03),
+            },
+            {
+                cb: calculate,
+                canRefetch: true,
+                async: true
+            },
             // {
             //     cb: eventActionsCreators.fetchGuests,
             //     canRefetch: ( ( { event } ) => !event.guests.length ),

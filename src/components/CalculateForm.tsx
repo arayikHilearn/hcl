@@ -11,9 +11,14 @@ import { CURRENCY } from '../config';
 
 const CalculateForm: FC = () => {
     const actions = useActions();
-    const { actions: { setHomePrice, setCashAvailable, setInterestRate, calculate }, priceMaskOptions, percentMaskOptions } = useMemo(() => ({
+    const {
+        actions: {
+            setHomePrice, setCashAvailable, setCashAvailableByPercent, setInterestRate, calculate
+        }, priceMaskOptions, percentPrefixMaskOptions, percentMaskOptions
+    } = useMemo(() => ({
         actions,
         priceMaskOptions: getMaskOptions(CURRENCY),
+        percentPrefixMaskOptions: getMaskOptions('%', 'percent-prefix'),
         percentMaskOptions: getMaskOptions('%', 'percent')
     }), []);
     const loanProgram = useAppSelector(calculateForm.loanProgramSelector);
@@ -42,19 +47,29 @@ const CalculateForm: FC = () => {
                 label="Loan program"
                 inputValue={ loanProgram ? loanProgramMap.get(loanProgram) : '' }
             />
-            <AppInput
-                name="cashAvailable"
-                label="Cash available for down payment"
-                selector={ calculateForm.cashAvailableSelector }
-                onChangeHandler={ setCashAvailable }
-                mask={ priceMaskOptions }
-            />
+            <div className={ styles['inputs-wrapper'] }>
+                <AppInput
+                    wrapperClassName={ styles['input-mixed'] }
+                    name="cashAvailable"
+                    label="Cash available for down payment"
+                    selector={ calculateForm.cashAvailableSelector }
+                    onChangeHandler={ setCashAvailable }
+                    mask={ priceMaskOptions }
+                />
+                <AppInput
+                    type="circle"
+                    name="cashAvailable"
+                    selector={ calculateForm.cashAvailableSelectorPercent }
+                    onChangeHandler={ setCashAvailableByPercent }
+                    mask={ percentMaskOptions }
+                />
+            </div>
             <AppInput
                 name="interestRate"
                 label="Interest rate"
                 selector={ calculateForm.interestRateSelector }
                 onChangeHandler={ setInterestRate }
-                mask={ percentMaskOptions }
+                mask={ percentPrefixMaskOptions }
             />
             <AppButton type="submit">
                 Calculate

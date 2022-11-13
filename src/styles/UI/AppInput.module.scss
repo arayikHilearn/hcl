@@ -7,9 +7,17 @@
   outline: none;
   padding: 0;
   width: 100%;
+  //caret-color: $cAccent;
 
   &:disabled {
     color: $cDark;
+  }
+
+  &-circle {
+    border-radius: 1.9rem;
+    text-align: center;
+    padding: 1rem;
+    background-color: rgba($cAccent, 0.5);
   }
 
   &::-webkit-outer-spin-button,
@@ -35,6 +43,7 @@
     }
     &:focus-within {
       .input-label {
+        white-space: nowrap;
         font-size: 1.2rem;
         top: 0.8rem;
         transform: none;
@@ -49,7 +58,9 @@
     position: absolute;
     left: 2.4rem;
     top: 0.8rem;
+    white-space: nowrap;
     &.empty {
+      white-space: inherit;
       font-size: 1.6rem;
       top: 50%;
       transform: translateY(-50%);

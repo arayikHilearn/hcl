@@ -1,8 +1,11 @@
 $maxScreen: 1440;
 $maxContainer: 1200;
+$tabletBreakPoint: 1024 + 1;
+$mobileBreakPoint: 768 + 1;
+$mobileExtraBreakPoint: 480 + 1;
 $fzParent: 10;
 $fzDefault: 16;
-$fz: #{calc(16 / 10)}rem;
+$fz: #{calc($fzDefault / $fzParent)}rem;
 $lh: calc(19 / $fzDefault) * 1em;
 $ff: "Inter";
 $transition: all 0.16s linear;
@@ -18,7 +21,7 @@ $cLightOp: rgba($cLight, 0.6);
 $cGrey: #F7F7F7;
 $cAccent: #C3F84F;
 $cAccentDarker: mix(black, $cAccent, 13%);
-$cAccentOp: rgba($cAccent, 0.5);
+$cAccentOp: rgba($cAccent, 0.69);
 $cError: #F48181;
 $cBackground: #1F3221;
 

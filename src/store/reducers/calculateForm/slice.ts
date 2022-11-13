@@ -34,6 +34,13 @@ const calculateFormSlice = createSlice({
             const error = isValid(payload?.toString() || '', cashAvailableErrorConfig(state.homePrice || 0));
             error ? (state.error.cashAvailable = error) : (delete state.error.cashAvailable);
         },
+        setCashAvailableByPercent(state, { payload }: PayloadAction<number | null>) {
+            const cashAvailable = (state.homePrice || 0) * (payload || 0) / 100;
+            state.cashAvailable = cashAvailable;
+
+            const error = isValid(cashAvailable.toString(), cashAvailableErrorConfig(state.homePrice || 0));
+            error ? (state.error.cashAvailable = error) : (delete state.error.cashAvailable);
+        },
         setInterestRate(state, { payload }: PayloadAction<ICalculateForm['interestRate']>) {
             state.interestRate = payload;
 

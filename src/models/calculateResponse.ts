@@ -13,3 +13,10 @@ export type TCalculateResponse = Record<typeof ChartsCategoryList[number], {
     summary?: Record<string, string>,
     annual_data: Record<typeof AnnualDataTypes[number], number[]>
 }>
+
+export interface ICalculationParams {
+    property_value: number,
+    downpayment: number,
+    interest_rate: number,
+    term: number
+}

@@ -1,11 +1,8 @@
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { useAppSelector } from '../hooks/redux';
 import { usePageStateSetUp } from '../hooks/usePageStateSetUp';
 import AppRouter from './AppRouter';
-import Highcharts, { Options } from 'highcharts';
-import HighchartsReact from 'highcharts-react-official';
 import { useRenderWatcher } from '../hooks/useRenderWatcher';
-import { useStyle } from '../hooks/useStyle';
 
 
 

@@ -16,6 +16,8 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     selector?: (state: TRootState) => unknown;
     onChangeHandler?: (value: number | null) => void;
     mask?: MaskedInputProps;
+    type?: 'default' | 'circle';
+    wrapperClassName?: string;
 }
 
 const AppInput: FC<InputProps> = ({
@@ -25,15 +27,21 @@ const AppInput: FC<InputProps> = ({
     inputValue,
     selector,
     mask,
+    type,
+    className,
+    wrapperClassName,
     ...defaultProps
 }) => {
     const error = useAppSelector(calculateForm.errorSelector(name));
     const value = inputValue ? inputValue : selector ? useAppSelector(selector) : '';
     let inputProps = {
         ...defaultProps,
-        className: styles.input,
         value,
+        className: _c(styles.input, className, {
+            [styles['input-circle']]: type === 'circle'
+        }),
     } as MaskedInputProps;
+
     if (mask) {
         inputProps = { ...inputProps, ...mask };
     }
@@ -46,11 +54,21 @@ const AppInput: FC<InputProps> = ({
         };
     }
 
+    console.log(inputProps);
     useRenderWatcher('AppInput', [ name, value, error ]);
+
+    if (type === 'circle') {
+        return (
+            mask
+                ? <MaskedInput { ...inputProps } />
+                : <input { ...inputProps } />
+        );
+    }
+
     return (
         <label className={ _c(
-            styles['input-wrapper'], {
-                [styles['disabled']]: inputProps.disabled
+            styles['input-wrapper'], wrapperClassName || '', {
+                [styles['disabled']]: inputProps.disabled,
             }) }
         >
             <span className={ _c(

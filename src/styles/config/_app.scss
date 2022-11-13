@@ -88,3 +88,9 @@ h1 {
 .center {
   margin: 0 auto;
 }
+
+@media (max-width: #{$mobileBreakPoint}px) {
+  html {
+    font-size: #{calc(9 / 16)}rem;
+  }
+}

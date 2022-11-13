@@ -1,10 +1,10 @@
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import { CSSProperties, FC, useState } from 'react';
+import { CSSProperties, FC, useEffect, useState } from 'react';
 import { ColumnChartConfig } from '../../config/ChartConfig';
 import { useCallOnResize } from '../../hooks/useCallOnResize';
 import { useRenderWatcher } from '../../hooks/useRenderWatcher';
-import ColumnChartLabels from './ColumnChartLabels';
+import ColumnChartLabels from './ChartLabels';
 import styles from 'src/styles/components/ColumnChart.module.scss';
 import { useAppSelector } from '../../hooks/redux';
 import ChartsSelectors from '../../store/selectors/chartsSelector';
@@ -17,6 +17,10 @@ const ColumnChart: FC<{style?: CSSProperties}> = ({ style = {} }) => {
     const [ config, setConfig ] = useState(() => chartConfig.chartSetup(data));
 
     useCallOnResize(() => setConfig(chartConfig.chartSetup(data)), 150);
+
+    useEffect(() => {
+        setConfig(chartConfig.chartSetup(data));
+    }, [ data ]);
 
     console.log(config, 33333, data);
 

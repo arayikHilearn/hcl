@@ -8,7 +8,7 @@
   box-shadow: 0 0.4rem 0.4rem rgba(0, 0, 0, 0.25);
   &-bg {
     background-image: url("/assets/images/header-background.png");
-    background-image: url("/assets/images/Background.png");
+    //background-image: url("/assets/images/Background.png");
     background-color: $cBackground;
     background-size: cover;
     background-repeat: no-repeat;
@@ -30,6 +30,15 @@
       background-size: contain;
       background-repeat: no-repeat;
       background-position: left top;
+    }
+  }
+}
+
+@media (max-width: #{$tabletBreakPoint}px) {
+  .header {
+    padding: 3.2rem 0;
+    &-bg::after {
+      display: none;
     }
   }
 }

@@ -33,3 +33,24 @@
     margin-right: 0.8rem;
   }
 }
+
+
+@media (max-width: #{$tabletBreakPoint}px) {
+  .header-inner {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .col-1 {
+    margin-right: 0;
+  }
+  .col-2 {
+    background-image: url(/assets/images/background-grid-3.png);
+    margin: 3.2rem 0 0;
+    padding: 2.4rem calc(24 / $mobileBreakPoint) * 100% 2.4rem;
+    max-width: 71rem;
+    div:first-child {
+      margin-right: 1.6rem;
+    }
+  }
+}
+

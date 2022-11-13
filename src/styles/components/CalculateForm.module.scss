@@ -11,3 +11,22 @@
     margin-top: 0.8rem;
   }
 }
+
+.inputs-wrapper {
+  position: relative;
+  width: calc(343 / 710) * 100%;
+}
+
+.input-mixed {
+  width: 100%;
+  & > span:first-child {
+    padding-right: 6.5rem;
+  }
+  & + input {
+    width: 5.5rem;
+    position: absolute;
+    top: 50%;
+    right: 0.8rem;
+    transform: translateY(#{calc(-50% - 2.4rem / 2)});
+  }
+}

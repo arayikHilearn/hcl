@@ -1,10 +1,10 @@
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import { CSSProperties, FC, useState } from 'react';
+import { CSSProperties, FC, useEffect, useState } from 'react';
 import { LineChartConfig } from '../../config/ChartConfig';
 import { useCallOnResize } from '../../hooks/useCallOnResize';
 import { useRenderWatcher } from '../../hooks/useRenderWatcher';
-import ColumnChartLabels from './ColumnChartLabels';
+import ColumnChartLabels from './ChartLabels';
 import styles from 'src/styles/components/ColumnChart.module.scss';
 import { useAppSelector } from '../../hooks/redux';
 import ChartsSelectors from '../../store/selectors/chartsSelector';
@@ -18,6 +18,10 @@ const LineChart: FC<{style?: CSSProperties}> = ({ style = {} }) => {
     const [ config, setConfig ] = useState(() => chartConfig.chartSetup({ area, line }));
 
     useCallOnResize(() => setConfig(chartConfig.chartSetup({ area, line })), 150);
+
+    useEffect(() => {
+        setConfig(chartConfig.chartSetup({ area, line }));
+    }, [ area, line ]);
 
     console.log(config, 33333, { area, line });
 

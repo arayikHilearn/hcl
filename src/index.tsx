@@ -8,7 +8,7 @@ import { setupStore } from './store';
 
 const store = setupStore();
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
-//! npx json-server --watch db.json --port 5000
+//! npx json-server --watch db.json --port 5001
 root.render(
     //<StrictMode>
     <Provider store={ store }>

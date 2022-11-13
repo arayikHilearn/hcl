@@ -8,6 +8,7 @@ import { useRenderWatcher } from '../hooks/useRenderWatcher';
 import AppSection from '../components/UI/AppSection';
 import ColumnChart from '../components/Charts/ColumnChart';
 import LineChart from '../components/Charts/LineChart';
+import _c from 'classnames';
 
 const Home: FC = () => {
     useRenderWatcher('Home');
@@ -15,7 +16,7 @@ const Home: FC = () => {
         <>
             <AppHeader>
                 <div className="container">
-                    <div className="row-sb">
+                    <div className={ _c('row-sb', styles['header-inner']) }>
                         <div className={ `column ${styles['col-1']}` }>
                             <h1 className={ `light-c ${styles['title']}` }>Hybrid Collateral Loan (HCL)</h1>
                             <h3 className={ `light-c ${styles['sub-title']}` }>Description text goes her for the hybrid collateral loan</h3>
@@ -24,7 +25,6 @@ const Home: FC = () => {
                         <div className={ `row-sb ${styles['col-2']}` }>
                             <Widget
                                 type="monotone"
-                                background="red"
                                 label="Principal"
                                 selector={ calculateForm.cashAvailableSelector }
                                 title="Conventional"
