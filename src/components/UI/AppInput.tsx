@@ -34,13 +34,17 @@ const AppInput: FC<InputProps> = ({
         className: styles.input,
         value,
     } as MaskedInputProps;
-    if (mask) inputProps = { ...inputProps, ...mask };
-    if (onChangeHandler) inputProps = {
-        ...inputProps,
-        onChange: (event: ChangeEvent<HTMLInputElement>) => {
-            onChangeHandler(parseToFloat(event.target.value));
-        }
-    };
+    if (mask) {
+        inputProps = { ...inputProps, ...mask };
+    }
+    if (onChangeHandler) {
+        inputProps = {
+            ...inputProps,
+            onChange: (event: ChangeEvent<HTMLInputElement>) => {
+                onChangeHandler(parseToFloat(event.target.value));
+            }
+        };
+    }
 
     useRenderWatcher('AppInput', [ name, value, error ]);
     return (
@@ -52,7 +56,7 @@ const AppInput: FC<InputProps> = ({
             <span className={ _c(
                 'dark-op-c',
                 styles['input-label'], {
-                    [styles['empty']]: !value
+                    [styles['empty']]: value === null
                 }) }
             >
                 { label }

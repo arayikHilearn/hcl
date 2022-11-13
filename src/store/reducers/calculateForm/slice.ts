@@ -1,7 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { calculate } from './actionCreators';
 import { ICalculateForm } from './index';
-import { emptyErrorMessage } from '../../../config';
+import isValid, {
+    cashAvailableErrorConfig,
+    homePriceErrorConfig,
+    setInterestErrorConfig
+} from '../../../utils/isValid';
 
 const initialState: ICalculateForm = {
     homePrice: null,
@@ -17,18 +21,24 @@ const calculateFormSlice = createSlice({
     reducers: {
         setHomePrice(state, { payload }: PayloadAction<ICalculateForm['homePrice']>) {
             state.homePrice = payload;
-            if (payload) delete state.error.homePrice;
-            else state.error.homePrice = emptyErrorMessage;
+
+            const errorHomePrice = isValid(payload?.toString() || '', homePriceErrorConfig);
+            errorHomePrice ? (state.error.homePrice = errorHomePrice) : (delete state.error.homePrice);
+            const errorCashAvailable = isValid(state.cashAvailable?.toString() || '', cashAvailableErrorConfig(payload || 0));
+            errorCashAvailable ? (state.error.cashAvailable = errorCashAvailable) : (delete state.error.cashAvailable);
+
         },
         setCashAvailable(state, { payload }: PayloadAction<ICalculateForm['cashAvailable']>) {
             state.cashAvailable = payload;
-            if (payload) delete state.error.cashAvailable;
-            else state.error.cashAvailable = emptyErrorMessage;
+
+            const error = isValid(payload?.toString() || '', cashAvailableErrorConfig(state.homePrice || 0));
+            error ? (state.error.cashAvailable = error) : (delete state.error.cashAvailable);
         },
         setInterestRate(state, { payload }: PayloadAction<ICalculateForm['interestRate']>) {
             state.interestRate = payload;
-            if (payload) delete state.error.interestRate;
-            else state.error.interestRate = emptyErrorMessage;
+
+            const error = isValid(payload?.toString() || '', setInterestErrorConfig);
+            error ? (state.error.interestRate = error) : (delete state.error.interestRate);
         },
         setError(state, { payload }: PayloadAction<ICalculateForm['error']>) {
             state.error = { ...state.error, ...payload };

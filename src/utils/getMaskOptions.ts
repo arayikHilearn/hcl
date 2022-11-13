@@ -25,11 +25,11 @@ export default function getMaskOptions(prefix: string, type: 'price' | 'percent'
                     prefix: `${prefix} `,
                     //suffix: '',
                     //thousandsSeparatorSymbol: ',',
-                    includeThousandsSeparator: false,
+                    //includeThousandsSeparator: false,
                     allowDecimal: true,
                     decimalSymbol: '.',
-                    decimalLimit: 3, // how many digits allowed after the decimal
-                    integerLimit: 3, // limit length of integer numbers
+                    decimalLimit: 2, // how many digits allowed after the decimal
+                    integerLimit: 1, // limit length of integer numbers
                     allowNegative: false,
                     allowLeadingZeroes: false,
                 }),

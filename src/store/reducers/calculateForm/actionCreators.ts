@@ -2,6 +2,11 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { TRootState } from '../../index';
 import { ICalculateForm } from './index';
 import { emptyErrorMessage } from '../../../config';
+import isValid, {
+    cashAvailableErrorConfig,
+    homePriceErrorConfig,
+    setInterestErrorConfig
+} from '../../../utils/isValid';
 
 export const calculate = createAsyncThunk(
     'auth/login',
@@ -9,21 +14,19 @@ export const calculate = createAsyncThunk(
         try {
             const { calculateForm: { loanProgram, cashAvailable, homePrice, interestRate } } = getState() as TRootState;
             const error: ICalculateForm['error'] = {};
-            if (!loanProgram) {
-                error.loanProgram = emptyErrorMessage;
-            }
 
-            if (!cashAvailable) {
-                error.cashAvailable = emptyErrorMessage;
-            }
+            if (!loanProgram) error.loanProgram = emptyErrorMessage;
 
-            if (!homePrice) {
-                error.homePrice = emptyErrorMessage;
-            }
+            const homePriceError = isValid(homePrice?.toString() || '', homePriceErrorConfig);
+            if (homePriceError) (error.homePrice = homePriceError);
 
-            if (!interestRate) {
-                error.interestRate = emptyErrorMessage;
-            }
+            const cashAvailableError = isValid(cashAvailable?.toString() || '', cashAvailableErrorConfig(homePrice || 0));
+            if (cashAvailableError) (error.cashAvailable = cashAvailableError);
+
+
+            const interestRateError = isValid(interestRate?.toString() || '', setInterestErrorConfig);
+            if (interestRateError) (error.interestRate = interestRateError);
+
 
             if (Object.keys(error).length) {
                 return rejectWithValue(error);
