@@ -8,7 +8,7 @@ export function getChartsData(data: TCalculateResponse) {
         worst: { annualData: null },
     };
 
-    ChartsCategoryList.forEach(k => {
+    (Object.keys(data) as Array<typeof ChartsCategoryList[number]>).forEach(k => {
         chartsData[k] = {
             annualData: {
                 hclAnnualPayment: data[k].annual_data.hcl_annual_payment,

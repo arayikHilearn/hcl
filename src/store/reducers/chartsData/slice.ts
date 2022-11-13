@@ -19,8 +19,8 @@ const chartsDataSlice = createSlice({
     initialState,
     reducers: {
         setChartsData(state, { payload }: PayloadAction<TChartsData>) {
-            ChartsCategoryList.forEach((k) => {
-                state[k].annualData = payload[k].annualData;
+            (Object.keys(payload) as Array<typeof ChartsCategoryList[number]>).forEach((key) => {
+                if (payload[key].annualData) state[key].annualData = payload[key].annualData;
             });
         }
     },

@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import styles from 'src/styles/components/ColumnChartLables.module.scss';
+import styles from 'src/styles/components/ChartLables.module.scss';
 import _c from 'classnames';
 
 interface IColumnChartLabels {

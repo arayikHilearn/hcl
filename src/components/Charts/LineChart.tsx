@@ -1,6 +1,6 @@
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import { CSSProperties, FC, useEffect, useState } from 'react';
+import { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import { LineChartConfig } from '../../config/ChartConfig';
 import { useCallOnResize } from '../../hooks/useCallOnResize';
 import { useRenderWatcher } from '../../hooks/useRenderWatcher';
@@ -8,24 +8,23 @@ import ColumnChartLabels from './ChartLabels';
 import styles from 'src/styles/components/ColumnChart.module.scss';
 import { useAppSelector } from '../../hooks/redux';
 import ChartsSelectors from '../../store/selectors/chartsSelector';
+import { ChartsCategoryList } from '../../models/calculateResponse';
 
 const chartConfig = new LineChartConfig();
 
 
-const LineChart: FC<{style?: CSSProperties}> = ({ style = {} }) => {
-    const area = useAppSelector(ChartsSelectors.CumulativePaymentSelector);
-    const line = useAppSelector(ChartsSelectors.LoanBalanceSelector);
+const LineChart: FC<{style?: CSSProperties, category: typeof ChartsCategoryList[number]}> = ({
+    style = {},  category
+}) => {
+    const selectorArea = useMemo(() => ChartsSelectors.CumulativePaymentSelector(category), [ category ]);
+    const selectorLine = useMemo(() => ChartsSelectors.LoanBalanceSelector(category), [ category ]);
+    const area = useAppSelector(selectorArea);
+    const line = useAppSelector(selectorLine);
     const [ config, setConfig ] = useState(() => chartConfig.chartSetup({ area, line }));
 
     useCallOnResize(() => setConfig(chartConfig.chartSetup({ area, line })), 150);
 
-    useEffect(() => {
-        setConfig(chartConfig.chartSetup({ area, line }));
-    }, [ area, line ]);
-
-    console.log(config, 33333, { area, line });
-
-    useRenderWatcher('ColumnChart');
+    useRenderWatcher('LineChart', [ category ]);
     return  (
         <div
             style={ style }

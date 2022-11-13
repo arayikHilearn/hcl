@@ -1,6 +1,6 @@
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import { CSSProperties, FC, useEffect, useState } from 'react';
+import { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import { ColumnChartConfig } from '../../config/ChartConfig';
 import { useCallOnResize } from '../../hooks/useCallOnResize';
 import { useRenderWatcher } from '../../hooks/useRenderWatcher';
@@ -8,23 +8,20 @@ import ColumnChartLabels from './ChartLabels';
 import styles from 'src/styles/components/ColumnChart.module.scss';
 import { useAppSelector } from '../../hooks/redux';
 import ChartsSelectors from '../../store/selectors/chartsSelector';
+import { ChartsCategoryList } from '../../models/calculateResponse';
 
-const chartConfig = new ColumnChartConfig({ $pointWidth: 10.7 }, { $cDark: 'red' });
+const chartConfig = new ColumnChartConfig({ $pointWidth: 10.7 });
 
-
-const ColumnChart: FC<{style?: CSSProperties}> = ({ style = {} }) => {
-    const data = useAppSelector(ChartsSelectors.AnnualPaymentSelector);
+const ColumnChart: FC<{style?: CSSProperties, category: typeof ChartsCategoryList[number]}> = (
+    { style = {}, category }
+) => {
+    const selector = useMemo(() => ChartsSelectors.AnnualPaymentSelector(category), [ category ]);
+    const data = useAppSelector(selector);
     const [ config, setConfig ] = useState(() => chartConfig.chartSetup(data));
 
     useCallOnResize(() => setConfig(chartConfig.chartSetup(data)), 150);
 
-    useEffect(() => {
-        setConfig(chartConfig.chartSetup(data));
-    }, [ data ]);
-
-    console.log(config, 33333, data);
-
-    useRenderWatcher('ColumnChart');
+    useRenderWatcher('ColumnChart', [ category ]);
     return  (
         <div
             style={ style }
@@ -39,51 +36,10 @@ const ColumnChart: FC<{style?: CSSProperties}> = ({ style = {} }) => {
                     [ { text: 'Conventional out of pocket payment', colorIndex: 2, type: 'circle' } ]
                 ] }
             />
-            <div style={{ position: 'relative' }}>
-                <div style={{    position: 'absolute',
-                    bottom: 16,
-                    left: '305px',
-                    zIndex: 10,
-                    background: 'blueviolet',
-                    height: '39px',
-                    width: '30px',
-                    opacity: 0.6
-                }}
-                >
-                    <div style={{ background: '#342422', height: '8px' }}></div>
-                    <div style={{ background: 'red', height: '12px' }}></div>
-                </div>
-                <div style={{    position: 'absolute',
-                    top: '50%',
-                    left: '56px',
-                    zIndex: 10,
-                    background: 'blueviolet',
-                    height: '39px',
-                    width: '8px',
-                    opacity: 0.6
-                }}
-                >
-                    <div style={{ background: '#342422', height: '8px' }}></div>
-                    <div style={{ background: 'red', height: '12px' }}></div>
-                </div>
-                <div style={{    position: 'absolute',
-                    top: '43%',
-                    left: '25.5px',
-                    zIndex: 10,
-                    background: 'blueviolet',
-                    height: '39px',
-                    width: '8px',
-                    opacity: 0.6
-                }}
-                >
-                    <div style={{ background: '#342422', height: '8px' }}></div>
-                    <div style={{ background: 'red', height: '12px' }}></div>
-                </div>
-                <HighchartsReact
-                    highcharts={ Highcharts }
-                    options={ config.options }
-                />
-            </div>
+            <HighchartsReact
+                highcharts={ Highcharts }
+                options={ config.options }
+            />
         </div>
     );
 };

@@ -115,7 +115,6 @@ class StateSetUpConfig {
                 canRefetch = true;
             }
 
-            console.log({ canRefetch });
             if (canRefetch) {
                 if (isAsync) {
                     await (dispatch(action.cb()));

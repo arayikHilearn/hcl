@@ -9,8 +9,12 @@ import AppSection from '../components/UI/AppSection';
 import ColumnChart from '../components/Charts/ColumnChart';
 import LineChart from '../components/Charts/LineChart';
 import _c from 'classnames';
+import { useAppSelector } from '../hooks/redux';
+import chartsSelector from '../store/selectors/chartsSelector';
 
 const Home: FC = () => {
+    const chartsCategories = useAppSelector(chartsSelector.GetChartsCategories);
+
     useRenderWatcher('Home');
     return (
         <>
@@ -42,12 +46,15 @@ const Home: FC = () => {
                     </div>
                 </div>
             </AppHeader>
-            <AppSection>
-                <div className="row-sb">
-                    <ColumnChart />
-                    <LineChart />
-                </div>
-            </AppSection>
+            { chartsCategories.map(cat => (
+                <AppSection key={ cat }>
+                    <div className="row-sb">
+                        <ColumnChart category={ cat } />
+                        <LineChart category={ cat } />
+                    </div>
+                </AppSection>
+            )) }
+
         </>
     );
 };
