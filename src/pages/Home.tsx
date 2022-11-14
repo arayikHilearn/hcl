@@ -3,14 +3,16 @@ import CalculateForm from '../components/CalculateForm';
 import AppHeader from '../components/UI/AppHeader';
 import styles from 'src/styles/pages/Home.module.scss';
 import Widget from '../components/Widget';
-import { calculateForm } from '../store/selectors';
 import { useRenderWatcher } from '../hooks/useRenderWatcher';
 import AppSection from '../components/UI/AppSection';
 import ColumnChart from '../components/Charts/ColumnChart';
 import LineChart from '../components/Charts/LineChart';
 import _c from 'classnames';
 import { useAppSelector } from '../hooks/redux';
-import chartsSelector from '../store/selectors/chartsSelector';
+import chartsSelector from '../store/selectors/ChartsSelector';
+import AppSectionTitle from '../components/UI/AppSectionTitle';
+import CalculateFormSelector from '../store/selectors/CalculateFormSelector';
+import EmailSubmissionForm from '../components/EmailSubmissionForm';
 
 const Home: FC = () => {
     const chartsCategories = useAppSelector(chartsSelector.GetChartsCategories);
@@ -30,7 +32,7 @@ const Home: FC = () => {
                             <Widget
                                 type="monotone"
                                 label="Principal"
-                                selector={ calculateForm.cashAvailableSelector }
+                                selector={ CalculateFormSelector.cashAvailableSelector }
                                 title="Conventional"
                                 subTitle="20% down payment"
                             />
@@ -38,7 +40,7 @@ const Home: FC = () => {
                                 type="default"
                                 background="rgba(231, 252, 185, 0.1)"
                                 label="Principal"
-                                selector={ calculateForm.homePriceSelector }
+                                selector={ CalculateFormSelector.homePriceSelector }
                                 title="HCL"
                                 subTitle="20% investment"
                             />
@@ -46,8 +48,16 @@ const Home: FC = () => {
                     </div>
                 </div>
             </AppHeader>
-            { chartsCategories.map(cat => (
+
+            <EmailSubmissionForm />
+
+            { chartsCategories.map((cat, i) => (
                 <AppSection key={ cat }>
+                    <div className="row-sb">
+                        <AppSectionTitle number={ `0${i+1}` }>
+                            { `${cat.replace(/\b[a-z]/g, (l) => l.toUpperCase())} scenario` }
+                        </AppSectionTitle>
+                    </div>
                     <div className="row-sb">
                         <ColumnChart category={ cat } />
                         <LineChart category={ cat } />

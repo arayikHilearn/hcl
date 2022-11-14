@@ -4,17 +4,18 @@ import MaskedInput, { MaskedInputProps } from 'react-text-mask';
 import { useRenderWatcher } from '../../hooks/useRenderWatcher';
 import { useAppSelector } from '../../hooks/redux';
 import _c from 'classnames';
-import { calculateForm } from '../../store/selectors';
 import { TCalculateFormData } from '../../store/reducers/calculateForm';
 import parseToFloat from '../../utils/parseToFloat';
 import { TRootState } from '../../store';
+import { TEmailSubmissionFormData } from '../../store/reducers/emailSubmissionForm';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-    name: keyof TCalculateFormData
+    name: keyof TCalculateFormData | keyof TEmailSubmissionFormData
     label?: string;
     inputValue?: InputProps['value'];
     selector?: (state: TRootState) => unknown;
-    onChangeHandler?: (value: number | null) => void;
+    errorSelector?: (state: TRootState) => string;
+    onChangeHandler?: (value: any) => void;
     mask?: MaskedInputProps;
     type?: 'default' | 'circle';
     wrapperClassName?: string;
@@ -26,13 +27,14 @@ const AppInput: FC<InputProps> = ({
     onChangeHandler,
     inputValue,
     selector,
+    errorSelector,
     mask,
     type,
     className,
     wrapperClassName,
     ...defaultProps
 }) => {
-    const error = useAppSelector(calculateForm.errorSelector(name));
+    const error = errorSelector ? useAppSelector(errorSelector) : '';
     const value = inputValue ? inputValue : selector ? useAppSelector(selector) : '';
     let inputProps = {
         ...defaultProps,
@@ -86,7 +88,8 @@ const AppInput: FC<InputProps> = ({
                         : <input { ...inputProps } />
                 }
             </div>
-            <span className={ styles['input-error'] }>{ error }
+            <span className={ styles['input-error'] }>
+                { error }
             </span>
         </label>
     );

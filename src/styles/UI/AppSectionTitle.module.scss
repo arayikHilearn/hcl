@@ -1,0 +1,21 @@
+@import "../config/vars";
+
+.title {
+  font-size: 2.4rem;
+  line-height: #{calc(29/24)}em;
+  margin: 0;
+  &-number {
+    margin-right: 1.6rem;
+    padding: 1.6rem;
+    background-color: rgba($cAccent, 0.4);
+    border-radius: 3.2rem;
+    font-size: 2rem;
+  }
+  &-wrapper {
+    margin: 5.6rem 0 4rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+  }
+}
+

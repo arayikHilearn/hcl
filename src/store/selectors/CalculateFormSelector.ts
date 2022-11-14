@@ -43,8 +43,8 @@ class CalculateFormSelectors {
     );
 
     public static readonly hasErrorSelector = createSelector(
-        this.calculateFormData,
-        ({ error }) => !!Object.keys(error).length
+        this.calculateFormErrors,
+        (error) => !!Object.keys(error).length
     );
 
     public static readonly errorSelector = (key: keyof TCalculateFormData) => createSelector(

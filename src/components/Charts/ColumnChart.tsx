@@ -7,7 +7,7 @@ import { useRenderWatcher } from '../../hooks/useRenderWatcher';
 import ColumnChartLabels from './ChartLabels';
 import styles from 'src/styles/components/ColumnChart.module.scss';
 import { useAppSelector } from '../../hooks/redux';
-import ChartsSelectors from '../../store/selectors/chartsSelector';
+import ChartsSelectors from '../../store/selectors/ChartsSelector';
 import { ChartsCategoryList } from '../../models/calculateResponse';
 
 const chartConfig = new ColumnChartConfig({ $pointWidth: 10.7 });

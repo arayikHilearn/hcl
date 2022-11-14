@@ -2,22 +2,9 @@ import { AnyAction, createAsyncThunk, ThunkAction, ThunkDispatch } from '@reduxj
 import { NavigateFunction } from 'react-router-dom';
 import { ERoutes } from '../pages';
 import { TRootState } from '../store';
-import { calculate } from '../store/reducers/calculateForm/actionCreators';
-import { ICalculateForm } from '../store/reducers/calculateForm';
 import { calculateFormActionCreators } from '../store/reducers/calculateForm/slice';
 
 const pagesConfig: Record<string, Partial<IPageOptions>> = {
-    // [ERoutes.POST]: {
-    //     actions: [
-    //         {
-    //             cb: postAPI.endpoints.fetchAllPosts.initiate,
-    //             async: true,
-    //         }
-    //     ],
-    // },
-    // [ERoutes.LOGIN]: {
-    //     authRequirement: false,
-    // },
     [ERoutes.HOME]: {
         //authRequirement: true,
         actions: [
@@ -31,16 +18,23 @@ const pagesConfig: Record<string, Partial<IPageOptions>> = {
                 cb: calculateFormActionCreators.setInterestRate.bind(null, 0.03),
             },
             {
-                cb: calculate,
+                cb: calculateFormActionCreators.calculate,
                 canRefetch: true,
                 async: true
             },
-            // {
-            //     cb: eventActionsCreators.fetchGuests,
-            //     canRefetch: ( ( { event } ) => !event.guests.length ),
-            // }
         ]
     }
+    // [ERoutes.POST]: {
+    //     actions: [
+    //         {
+    //             cb: postAPI.endpoints.fetchAllPosts.initiate,
+    //             async: true,
+    //         }
+    //     ],
+    // },
+    // [ERoutes.LOGIN]: {
+    //     authRequirement: false,
+    // },
 };
 
 interface IPageOption {
