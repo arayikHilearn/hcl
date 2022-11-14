@@ -3,6 +3,7 @@ import { emailSubmission } from './actionCreators';
 import { IEmailSubmissionForm } from './index';
 
 const initialState: IEmailSubmissionForm = {
+    subStatus: false,
     email: null,
     error: {}
 };
@@ -17,9 +18,10 @@ const emailSubmissionFormSlice = createSlice({
 
     },
     extraReducers: {
-        // [emailSubmission.fulfilled.type]: (state, { payload }: PayloadAction<any>) => {
-        //
-        // },
+        [emailSubmission.fulfilled.type]: (state, { payload }: PayloadAction<boolean>) => {
+            state.subStatus = payload;
+            console.log(payload);
+        },
         // [emailSubmission.pending.type]: (state) => {
         //
         // },

@@ -9,6 +9,7 @@ export const emailSubmission = createAsyncThunk(
             const { emailSubmissionForm: { email } } = getState() as TRootState;
 
             console.log(email, 1213);
+            fulfillWithValue(true);
 
 
             // if (!loanProgram) error.loanProgram = emptyErrorMessage;

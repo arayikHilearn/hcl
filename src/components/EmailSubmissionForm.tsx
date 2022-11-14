@@ -1,7 +1,7 @@
 import { FC, FormEvent, useMemo } from 'react';
 import { useActions } from '../hooks/redux';
 import AppInput from './UI/AppInput';
-import styles from  'src/styles/components/CalculateForm.module.scss';
+import styles from  'src/styles/components/EmailSubmissionForm.module.scss';
 import getMaskOptions from '../utils/getMaskOptions';
 import { useRenderWatcher } from '../hooks/useRenderWatcher';
 import AppButton from './UI/AppButton';
@@ -42,7 +42,7 @@ const EmailSubmissionForm: FC = () => {
                 errorSelector={ EmailSubmissionFormSelector.hasErrorSelector }
                 type="submit"
             >
-                Calculate
+                Submit
             </AppButton>
         </form>
     );
