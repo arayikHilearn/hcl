@@ -11,6 +11,10 @@
   --cChartFocus2: #{$cChart2};
   --cChartHover1: #{rgba($cChart1, .2)};
   --cChartHover2: #{rgba($cChart2, .2)};
+  --cGradient1Stop0: #{rgba($cChart1, .2)};
+  --cGradient1Stop1: #{rgba($cChart1, 0)};
+  --cGradient2Stop0: #{rgba($cChart2, .4)};
+  --cGradient2Stop1: #{rgba($cChart2, 0)};
   --ff: #{$ff};
   --fz: #{$fz};
   --lh: #{$lh};

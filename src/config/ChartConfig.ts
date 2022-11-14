@@ -1,9 +1,10 @@
 import { useStyle } from '../hooks/useStyle';
-import { Options } from 'highcharts';
+import { GradientColorObject, Options } from 'highcharts';
 import { CURRENCY } from './index';
 import numberToShortForm from '../utils/numberToShortForm';
 import { WithPrefix } from '../utils/types';
 import Highcharts from 'highcharts';
+
 
 interface IAdditionalStyles {
     $chartWidth: number;
@@ -376,14 +377,16 @@ export class ColumnChartConfig<T extends string> extends ChartConfig {
             chart,
             yAxis,
             xAxis,
-            // tooltip: {
-            //     headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-            //     pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-            //         '<td style="padding:0"><b>{point.y:,.0f} </b></td></tr>',
-            //     footerFormat: '</table>',
-            //     shared: true,
-            //     useHTML: true
-            // },
+            tooltip: {
+                distance: 30,
+                padding: 5
+                // headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                // pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                //     '<td style="padding:0"><b>{point.y:,.0f} </b></td></tr>',
+                // footerFormat: '</table>',
+                // shared: true,
+                // useHTML: true
+            },
             plotOptions: {
                 column: {
                     animation: {
@@ -530,6 +533,8 @@ export class LineChartConfig extends ChartConfig {
     public readonly type = 'area';
     protected static cssStylesList = [
         ...ChartConfig.cssStylesListDefault,
+        'cGradient1Stop0', 'cGradient1Stop1',
+        'cGradient2Stop0', 'cGradient2Stop1',
         'maxScreen', 'maxContainer',
         'maxGutter', 'minGutter',
     ] as const;
@@ -568,6 +573,35 @@ export class LineChartConfig extends ChartConfig {
         this.chartOuterWidth = styles.$chartWidth + styles.$chartPadding * 2;
     }
 
+    private getDefaultSeriesOptions(fillColor: string) {
+        return {
+            lineWidth: 2,
+            states: {
+                hover: {
+                    lineWidth: 2,
+                    halo: {
+                        opacity: 0.1,
+                        size: 8,
+                    }
+                }
+            },
+            marker: {
+                fillColor,
+                enabledThreshold: 0,
+                radius: 4,
+                enabled: false,
+                symbol: 'circle',
+                states: {
+                    hover: {
+                        lineWidthPlus: 0,
+                        radiusPlus: 0,
+                    },
+                },
+            },
+            showInLegend: false,
+        } as Partial<Highcharts.SeriesOptionsType>;
+    }
+
     constructor(
         defaultStyles: Partial<IAdditionalStyles> = {
             $columnInnerPadding: LineChartConfig.defaultStyles.$columnInnerPadding,
@@ -598,20 +632,12 @@ export class LineChartConfig extends ChartConfig {
 
         const { categories, maxColumns, type, tickInterval } = this;
         const {
-            $cChart1,
-            $cChart2,
-            $cDark,
-            $ff,
-            $fz,
             $cChartFocus1,
             $cChartFocus2,
-            $cChartHover1,
-            $cChartHover2,
-            $columnInnerPadding,
-            $chartWidth,
-            $pointWidth,
-            $chartPadding,
-            $chartHeight
+            $cGradient1Stop0,
+            $cGradient1Stop1,
+            $cGradient2Stop0,
+            $cGradient2Stop1,
         } = this.styles;
         const defaultOptions = this.setupDefaultOptions();
         const chart = this.setupChart();
@@ -620,9 +646,29 @@ export class LineChartConfig extends ChartConfig {
 
         return {
             ...defaultOptions,
-            chart,
+            chart: {
+                ...chart,
+                //styledMode: true
+            },
             yAxis,
             xAxis,
+            // defs: {
+            //     gradient0: {
+            //         tagName: 'linearGradient',
+            //         id: 'gradient-0',
+            //         x1: 0,
+            //         y1: 0,
+            //         x2: 0,
+            //         y2: 1,
+            //         children: [ {
+            //             tagName: 'stop',
+            //             offset: 0
+            //         }, {
+            //             tagName: 'stop',
+            //             offset: 1
+            //         } ]
+            //     },
+            // },
             tooltip: {
                 split: true,
                 formatter(tooltip) {
@@ -638,58 +684,64 @@ export class LineChartConfig extends ChartConfig {
             plotOptions: {
                 //pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.percentage:.1f}%</b> ({point.y:,.1f} billion Gt)<br/>',
                 area: {
-                    fillColor: {
-                        linearGradient: {
-                            x1: 0,
-                            y1: 0,
-                            x2: 0,
-                            y2: 1
-                        },
-                        stops: [
-                            //@ts-ignore
-                            [ 0, Highcharts.getOptions().colors[0] ],
-                            //@ts-ignore
-                            [ 1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba') ]
-                        ]
-                    },
-                    marker: {
-                        radius: 2
-                    },
-                    lineWidth: 1,
-                    states: {
-                        hover: {
-                            lineWidth: 1
-                        }
-                    },
-                    threshold: null
-                },
-                series: {
-                    // states: {
-                    //     inactive: {
-                    //         opacity: 1,
+                    // fillColor: {
+                    //     linearGradient: {
+                    //         x1: 0,
+                    //         y1: 0,
+                    //         x2: 0,
+                    //         y2: 1
                     //     },
+                    //     stops: [
+                    //         //@ts-ignore
+                    //         [ 0, Highcharts.getOptions().colors[0] ],
+                    //         //@ts-ignore
+                    //         [ 1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba') ]
+                    //     ]
                     // },
-                    // crisp: false,
-                    // shadow: false,
-                    showInLegend: false,
-                    //opacity: 1,
-                }
+                    // marker: {
+                    //     radius: 2
+                    // },
+                    //lineWidth: 1,
+                    // states: {
+                    //     hover: {
+                    //         lineWidth: 1
+                    //     }
+                    // },
+                    //threshold: null
+                },
             },
+            /* blue gradient */
+
             series: [
                 ...lineData.map((d, i) => {
                     return {
                         dashStyle: 'Dash',
-                        color: i ? $cChart1 : $cChart2,
+                        color: i ? $cChartFocus1 : $cChartFocus2,
                         type: 'line',
                         data: d,
+                        ...this.getDefaultSeriesOptions(i ? $cChartFocus1 : $cChartFocus2)
                     };
                 }),
                 ...areaData.map((d, i) => {
                     return {
-                        //dashStyle: 'Dash',
-                        color: i ? $cChart1 : $cChart2,
+                        lineColor: i ? $cChartFocus1 : $cChartFocus2,
+                        color: (i ? {
+                            linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1, },
+                            stops: [
+                                [ 0, $cGradient1Stop0 ],
+                                [ 1, $cGradient1Stop1 ]
+                            ]
+                        } : {
+                            linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+                            stops: [
+                                [ 0, $cGradient2Stop0 ],
+                                [ 1, $cGradient2Stop1 ]
+                            ]
+                        }) as GradientColorObject,
                         type: 'area',
                         data: d,
+                        keys: [ 'y', 'selected' ],
+                        ...this.getDefaultSeriesOptions(i ? $cChartFocus1 : $cChartFocus2)
                     };
                 })
             ]
