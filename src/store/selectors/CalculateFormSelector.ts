@@ -25,9 +25,7 @@ class CalculateFormSelectors {
                 const value = cashAvailable / homePrice * 100;
                 return value > 99 ? 99 : value;
             }
-            const value = ((cashAvailable || 0) / (homePrice || 0)) * 100;
-            console.log(7886781111, value, !!value);
-            console.log(7886781111, value, !!value);
+
             return null;
         },
     );

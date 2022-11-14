@@ -267,7 +267,7 @@ abstract class ChartConfig {
             ...cssExtraStyles
         };
 
-        console.log('setupCssStyles', this.styles);
+        //console.log('setupCssStyles', this.styles);
     }
 
     //constructor() {}
@@ -305,7 +305,7 @@ export class ColumnChartConfig<T extends string> extends ChartConfig {
         const breakPoint = +styles.$maxContainer;
         //?
 
-        console.log({ containerWidth, breakPoint, containerPadding }, 777777);
+        //console.log({ containerWidth, breakPoint, containerPadding }, 777777);
 
         this.styles.$pointWidth = (containerWidth >= breakPoint
             ? defaultStyles.$pointWidth
@@ -364,7 +364,7 @@ export class ColumnChartConfig<T extends string> extends ChartConfig {
         const yAxis = this.setupYAxis();
         const xAxis = this.setupXAxis();
 
-        console.log(this.styles, 88888);
+        //console.log(this.styles, 88888);
 
         return {
             ...defaultOptions,
@@ -506,7 +506,7 @@ export class ColumnChartConfig<T extends string> extends ChartConfig {
     }
 
     public chartSetup = (data: number[][]) => {
-        console.log(222, this);
+        //console.log(222, this);
         const options = this.getOptions(data);
 
         return {
@@ -550,7 +550,7 @@ export class LineChartConfig extends ChartConfig {
         const breakPoint = +styles.$maxContainer;
         //?
 
-        console.log({ containerWidth, breakPoint, containerPadding }, 777777);
+        //console.log({ containerWidth, breakPoint, containerPadding }, 777777);
 
         this.styles.$pointWidth = (containerWidth >= breakPoint
             ? defaultStyles.$pointWidth
@@ -626,11 +626,10 @@ export class LineChartConfig extends ChartConfig {
             tooltip: {
                 split: true,
                 formatter(tooltip) {
-                    tooltip.chart.series;
-                    console.log(tooltip.chart.series, 'formatter');
+                    //console.log(tooltip.chart.series, 'formatter');
                     //return ' aa';
                     const p = this.points?.[0];
-                    console.log(this);
+                    //console.log(this);
                     return 'Country: <strong>' + p?.series?.name + '</strong>'
                         + '<br />Year: <strong>' + this.x + '</strong>'
                         + '<br />Quantity: <strong>' + p?.y + '</strong>';
@@ -698,7 +697,7 @@ export class LineChartConfig extends ChartConfig {
     }
 
     public chartSetup = ({ line, area }: { line: number[][], area: number[][] }) => {
-        console.log(222, this);
+        //console.log(222, this);
         const options = this.getOptions(line, area);
 
         return {

@@ -10,7 +10,7 @@ export function useCallOnResize(cb: () => void, ms?: number) {
                 timeoutId && clearTimeout(timeoutId);
                 timeoutId = setTimeout(cb, ms);
             }
-            console.log('RESIZE');
+            //console.log('RESIZE');
 
         }
 

@@ -56,7 +56,7 @@ const AppInput: FC<InputProps> = ({
         };
     }
 
-    console.log(inputProps);
+    //console.log(inputProps);
     useRenderWatcher('AppInput', [ name, value, error ]);
 
     if (type === 'circle') {

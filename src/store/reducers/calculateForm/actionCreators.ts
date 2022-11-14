@@ -32,19 +32,19 @@ export const calculate = createAsyncThunk(
             if (interestRateError) (error.interestRate = interestRateError);
 
 
-            console.log(88777, 879, error, { loanProgram, cashAvailable, homePrice, interestRate });
+            //console.log(88777, 879, error, { loanProgram, cashAvailable, homePrice, interestRate });
 
 
             if (Object.keys(error).length) {
                 return rejectWithValue(error);
             }
 
-            console.log('calculateForm/submit', {
-                property_value: homePrice as number,
-                downpayment: cashAvailable as number,
-                interest_rate: interestRate as number,
-                term: loanProgram as number,
-            });
+            // console.log('calculateForm/submit', {
+            //     property_value: homePrice as number,
+            //     downpayment: cashAvailable as number,
+            //     interest_rate: interestRate as number,
+            //     term: loanProgram as number,
+            // });
 
             const data = await ApiService.calculate({
                 property_value: homePrice as number,
@@ -57,7 +57,6 @@ export const calculate = createAsyncThunk(
 
             return null;
         } catch (err) {
-            console.log(err);
             return rejectWithValue('Something went wrong!');
         }
 
