@@ -573,7 +573,7 @@ export class LineChartConfig extends ChartConfig {
         this.chartOuterWidth = styles.$chartWidth + styles.$chartPadding * 2;
     }
 
-    private getDefaultSeriesOptions(fillColor: string) {
+    private getDefaultSeriesOptions(fillColor: string, type?: 'line' | 'area') {
         return {
             lineWidth: 2,
             states: {
@@ -593,12 +593,56 @@ export class LineChartConfig extends ChartConfig {
                 symbol: 'circle',
                 states: {
                     hover: {
+                        enabled: true,
                         lineWidthPlus: 0,
                         radiusPlus: 0,
                     },
                 },
             },
             showInLegend: false,
+            events: {
+                mouseOver() {
+                    const type = this.type;
+                    const series = this.chart.series;
+                    console.log(666);
+
+                    series.forEach((s) => {
+                        if (s.type !== type) {
+                            series[s.index].update({
+                                type: s.type as 'line' | 'area',
+                                opacity: 0.1,
+                                marker: {
+                                    states: {
+                                        hover: {
+                                            enabled: false
+                                        }
+                                    }
+                                }
+                            }, false);
+                        }
+                    });
+
+                    this.update({ type: type as 'line' | 'area' }, true);
+                },
+                mouseOut() {
+                    const series = this.chart.series;
+
+                    series.forEach((s, i) => {
+                        series[s.index].update({
+                            type: s.type as 'line' | 'area',
+                            opacity: 1,
+                            marker: {
+                                states: {
+                                    hover: {
+                                        enabled: true
+                                    }
+                                }
+                            }
+                        }, i === series.length - 1);
+                    });
+
+                }
+            }
         } as Partial<Highcharts.SeriesOptionsType>;
     }
 
@@ -646,31 +690,13 @@ export class LineChartConfig extends ChartConfig {
 
         return {
             ...defaultOptions,
-            chart: {
-                ...chart,
-                //styledMode: true
-            },
+            chart,
             yAxis,
             xAxis,
-            // defs: {
-            //     gradient0: {
-            //         tagName: 'linearGradient',
-            //         id: 'gradient-0',
-            //         x1: 0,
-            //         y1: 0,
-            //         x2: 0,
-            //         y2: 1,
-            //         children: [ {
-            //             tagName: 'stop',
-            //             offset: 0
-            //         }, {
-            //             tagName: 'stop',
-            //             offset: 1
-            //         } ]
-            //     },
-            // },
             tooltip: {
                 split: true,
+                // followPointer: true,
+                // shared: false,
                 formatter(tooltip) {
                     //console.log(tooltip.chart.series, 'formatter');
                     //return ' aa';
@@ -682,35 +708,7 @@ export class LineChartConfig extends ChartConfig {
                 }
             },
             plotOptions: {
-                //pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.percentage:.1f}%</b> ({point.y:,.1f} billion Gt)<br/>',
-                area: {
-                    // fillColor: {
-                    //     linearGradient: {
-                    //         x1: 0,
-                    //         y1: 0,
-                    //         x2: 0,
-                    //         y2: 1
-                    //     },
-                    //     stops: [
-                    //         //@ts-ignore
-                    //         [ 0, Highcharts.getOptions().colors[0] ],
-                    //         //@ts-ignore
-                    //         [ 1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba') ]
-                    //     ]
-                    // },
-                    // marker: {
-                    //     radius: 2
-                    // },
-                    //lineWidth: 1,
-                    // states: {
-                    //     hover: {
-                    //         lineWidth: 1
-                    //     }
-                    // },
-                    //threshold: null
-                },
             },
-            /* blue gradient */
 
             series: [
                 ...lineData.map((d, i) => {
@@ -740,7 +738,6 @@ export class LineChartConfig extends ChartConfig {
                         }) as GradientColorObject,
                         type: 'area',
                         data: d,
-                        keys: [ 'y', 'selected' ],
                         ...this.getDefaultSeriesOptions(i ? $cChartFocus1 : $cChartFocus2)
                     };
                 })
