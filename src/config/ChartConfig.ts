@@ -5,6 +5,12 @@ import numberToShortForm from '../utils/numberToShortForm';
 import { WithPrefix } from '../utils/types';
 import Highcharts from 'highcharts';
 
+//!!! 1M, 20%, 6%  // Loan Principal, Loan Principal // Balances // widgets bottom $200K in new line // change first widget count to 800K// change rate input value to 1-20%
+
+//!! Stats for summary items:
+// Total savings: $302,324
+// Avg monthly payment: $12,345
+// Percent time below conventional: 59%
 
 interface IAdditionalStyles {
     $chartWidth: number;
@@ -21,12 +27,58 @@ export type GetArrayElementType<T extends readonly any[]> = T extends readonly (
 
 abstract class ChartConfig {
     protected static cssStylesListDefault = [
-        'cDark', 'fz', 'lh', 'ff',
+        'cDark', 'cGrey', 'fz', 'lh', 'ff',
         'cChart1', 'cChart2',
         'cChartFocus1', 'cChartFocus2',
         'cChartHover1', 'cChartHover2'
     ] as const;
     protected static cssStylesList: GetArrayElementType<Array<unknown>>;
+
+    public data: number[][] = [];
+
+    protected tickInterval = 1;
+    protected maxColumns = 0;
+    protected maxValue = 0;
+    protected categories: string[] = [];
+    protected xAxisStyles: Record<string, any> = {};
+    protected yAxisStyles: Record<string, any> = {};
+    protected chartOuterWidth: number | null = null;
+
+    private getTicksStylesY(hasTicks: boolean) {
+        const { yAxisStyles, xAxisStyles, maxValue, styles } = this;
+
+        return {
+            minorTickInterval: hasTicks ? maxValue : 0,
+            minorTickLength: hasTicks ? styles.$chartWidth - yAxisStyles.width + this.lhFix(xAxisStyles.title.fz) + xAxisStyles.labels.margin : 0,
+            tickLength: 0,
+            lineWidth: 0,
+            minorGridLineWidth: 0,
+            lineColor: 'transparent',
+            gridLineColor: 'transparent',
+
+            minorTickPosition: 'inside',
+            minorTickWidth: 1,
+            minorTickColor: styles.$cGrey
+        };
+    }
+
+    private getTicksStylesX(hasTicks: boolean) {
+        const { categories, styles } = this;
+
+        return {
+            tickInterval: hasTicks ? 5 : 1, //*
+            categories: hasTicks ? null : categories,
+            tickLength: 0,
+            lineWidth: 0,
+            minorGridLineWidth: 0,
+            lineColor: 'transparent',
+            gridLineColor: styles.$cGrey,
+
+            minorTickWidth: 1,
+            gridLineWidth: 1,
+        };
+
+    }
 
     private readonly withoutTicksStyles = {
         minorTickLength: 0,
@@ -36,15 +88,6 @@ abstract class ChartConfig {
         lineColor: 'transparent',
         gridLineColor: 'transparent',
     };
-
-    public data: number[][] = [];
-
-    protected tickInterval = 1;
-    protected maxColumns = 0;
-    protected categories: string[] = [];
-    protected xAxisStyles: Record<string, any> = {};
-    protected yAxisStyles: Record<string, any> = {};
-    protected chartOuterWidth: number | null = null;
 
     abstract readonly type: 'column' | 'line' | 'area'
     protected abstract styles: TStyles<string & typeof ChartConfig.cssStylesListDefault[number]>
@@ -71,11 +114,12 @@ abstract class ChartConfig {
         return parseFloat(value) * (type === 'rem' ? 10 : 0);
     }
 
-    protected setupYAxis() {
-        const { withoutTicksStyles, tickInterval, yAxisStyles, styles: { $chartPadding, $cDark } } = this;
-
+    protected setupYAxis(hasTicks = false) {
+        const { withoutTicksStyles,  tickInterval, yAxisStyles, styles: { $chartPadding, $cDark } } = this;
+        const ticksStylesY = this.getTicksStylesY(hasTicks);
+        console.log(ticksStylesY.minorTickLength, this.maxValue);
         return { //??????
-            ...withoutTicksStyles,
+            ...(hasTicks ? ticksStylesY : withoutTicksStyles),
             //min: 1,
             //max: 100, //?
             endOnTick: false,
@@ -115,14 +159,13 @@ abstract class ChartConfig {
             },
         } as Options['yAxis'];
     }
-    protected setupXAxis() {
-        const { categories, withoutTicksStyles, xAxisStyles, yAxisStyles, styles: { $columnInnerPadding, $chartPadding, $cDark } } = this;
+    protected setupXAxis(hasTicks = false) {
+        const { withoutTicksStyles, xAxisStyles, yAxisStyles, styles: { $columnInnerPadding, $chartPadding, $cDark } } = this;
+        const ticksStylesX = this.getTicksStylesX(hasTicks);
 
         return {
-            ...withoutTicksStyles,
-            categories,
+            ...(hasTicks ? ticksStylesX : withoutTicksStyles),
             width: xAxisStyles.width + $columnInnerPadding,
-            tickInterval: 1, //*
             left: this.lhFix(xAxisStyles.title.fz)
                 + yAxisStyles.width
                 - $columnInnerPadding
@@ -200,10 +243,14 @@ abstract class ChartConfig {
         this.data.flat().forEach(value => {
             if (value > maxValue) maxValue = value;
         });
+
         maxValue = Math.floor(maxValue);
 
+        const valueThousands = 10 ** (maxValue.toString().length - 1);
+        this.maxValue = Math.ceil(maxValue / valueThousands) * valueThousands;
+
         if (maxValue < 10 ** 6) {
-            this.tickInterval = 10 ** (maxValue.toString().length - 1);
+            this.tickInterval = valueThousands;
         } else {
             this.tickInterval = 250000;
         }
@@ -604,7 +651,6 @@ export class LineChartConfig extends ChartConfig {
                 mouseOver() {
                     const type = this.type;
                     const series = this.chart.series;
-                    console.log(666);
 
                     series.forEach((s) => {
                         if (s.type !== type) {
@@ -685,8 +731,8 @@ export class LineChartConfig extends ChartConfig {
         } = this.styles;
         const defaultOptions = this.setupDefaultOptions();
         const chart = this.setupChart();
-        const yAxis = this.setupYAxis();
-        const xAxis = this.setupXAxis();
+        const yAxis = this.setupYAxis(true);
+        const xAxis = this.setupXAxis(true);
 
         return {
             ...defaultOptions,
@@ -707,9 +753,6 @@ export class LineChartConfig extends ChartConfig {
                         + '<br />Quantity: <strong>' + p?.y + '</strong>';
                 }
             },
-            plotOptions: {
-            },
-
             series: [
                 ...lineData.map((d, i) => {
                     return {
