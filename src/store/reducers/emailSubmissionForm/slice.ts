@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { emailSubmission } from './actionCreators';
 import { IEmailSubmissionForm } from './index';
-import isValid, { homePriceErrorConfig, setEmailErrorConfig } from '../../../utils/isValid';
+import isValid, { setEmailErrorConfig } from '../../../utils/isValid';
 
 const initialState: IEmailSubmissionForm = {
-    subStatus: false,
+    isSucceed: false,
     email: null,
     error: {}
 };
@@ -23,9 +23,7 @@ const emailSubmissionFormSlice = createSlice({
     },
     extraReducers: {
         [emailSubmission.fulfilled.type]: (state, { payload }: PayloadAction<boolean>) => {
-            state.subStatus = payload;
-
-            console.log(payload);
+            state.isSucceed = payload;
         },
         // [emailSubmission.pending.type]: (state) => {
         //

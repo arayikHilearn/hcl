@@ -3,13 +3,15 @@ import { TRootState } from '../../index';
 import isValid, { setEmailErrorConfig } from '../../../utils/isValid';
 import { ICalculateForm } from '../calculateForm';
 import { IEmailSubmissionForm } from './index';
+import ApiService from '../../../services/ApiService';
+import { apiErrorMessage } from '../../../config';
 
 export const emailSubmission = createAsyncThunk(
     'emailSubmissionForm/submit',
     async (_, { rejectWithValue, fulfillWithValue, getState, dispatch }) => {
         console.log('emailSubmissionForm/submit');
         try {
-            const { emailSubmissionForm: { email } } = getState() as TRootState;
+            const { emailSubmissionForm: { email }, calculateForm: { loanProgram, cashAvailable, homePrice, interestRate } } = getState() as TRootState;
             const error: IEmailSubmissionForm['error'] = {};
 
             const errorEmail = isValid(email?.toString() || '', setEmailErrorConfig);
@@ -20,8 +22,15 @@ export const emailSubmission = createAsyncThunk(
             }
 
 
-            console.log(email, 1213);
-            fulfillWithValue(true);
+            const calculationsData = {
+                property_value: homePrice,
+                downpayment: cashAvailable,
+                interest_rate: interestRate,
+                term: loanProgram
+            };
+            const isSucceed = await ApiService.emailSubscribe({ email: email as string, calculationsData });
+            console.log(email, isSucceed, 1213);
+            fulfillWithValue(isSucceed);
 
             // if (Object.keys(error).length) {
             //     return rejectWithValue(error);
@@ -38,8 +47,7 @@ export const emailSubmission = createAsyncThunk(
             //
             // return null;
         } catch (err) {
-            console.log(err);
-            //return rejectWithValue('Something went wrong!');
+            return rejectWithValue({ api: apiErrorMessage });
         }
 
     }

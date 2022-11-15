@@ -10,6 +10,21 @@ import Highcharts from 'highcharts';
 //!! Avg monthly payment: $12,345
 //!! Percent time below conventional: 59%
 
+// Total savings: $302,324
+// Avg monthly payment: $12,345
+// Percent time below conventional: 59%
+
+// {"expected": {
+//     "summary": {
+//         "total_savings": 302324.12386218746,
+//         "average_monthly_payment": 12345.6789,
+//         "portion_below_conventional": 0.5923},
+//         "annual_data": {....}
+//     },
+//     "best": {նույն ձև},
+//     "worst": {նույն ձև}
+// }
+
 interface IAdditionalStyles {
     $chartWidth: number;
     $pointWidth: number;

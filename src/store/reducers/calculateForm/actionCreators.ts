@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { TRootState } from '../../index';
 import { ICalculateForm } from './index';
-import { emptyErrorMessage } from '../../../config';
+import { apiErrorMessage, emptyErrorMessage } from '../../../config';
 import isValid, {
     cashAvailableErrorConfig,
     homePriceErrorConfig,
@@ -39,12 +39,6 @@ export const calculate = createAsyncThunk(
                 return rejectWithValue(error);
             }
 
-            // console.log('calculateForm/submit', {
-            //     property_value: homePrice as number,
-            //     downpayment: cashAvailable as number,
-            //     interest_rate: interestRate as number,
-            //     term: loanProgram as number,
-            // });
 
             const data = await ApiService.calculate({
                 property_value: homePrice as number,
@@ -57,8 +51,7 @@ export const calculate = createAsyncThunk(
 
             return null;
         } catch (err) {
-            console.log(err);
-            //return rejectWithValue('Something went wrong!');
+            return rejectWithValue({ api: apiErrorMessage });
         }
 
     }

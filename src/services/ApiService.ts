@@ -17,11 +17,11 @@ class ApiService extends BaseService {
         )).data;
     }
 
-    async emailSubscribe(email: string) {
-        return (await this.fetcher.post<any>(
+    async emailSubscribe(body: { email: string, calculationsData: Record<string, number | null> }) {
+        return (await this.fetcher.put<any>(
             this.routes.emailSubmission(),
-            email
-        )).data;
+            body
+        )).status === 200;
     }
 }
 

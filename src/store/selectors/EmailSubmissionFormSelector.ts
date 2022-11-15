@@ -6,6 +6,11 @@ class EmailSubmissionFormSelectors {
     private static readonly emailSubmissionFormData = (state: TRootState) => state.emailSubmissionForm;
     private static readonly emailSubmissionFormErrors = (state: TRootState) => state.emailSubmissionForm.error;
 
+    public static readonly isSucceedSelector = createSelector(
+        this.emailSubmissionFormData,
+        ({ isSucceed }) => isSucceed,
+    );
+
     public static readonly emailSelector = createSelector(
         this.emailSubmissionFormData,
         ({ email }) => email,
