@@ -13,6 +13,8 @@ import chartsSelector from '../store/selectors/ChartsSelector';
 import AppSectionTitle from '../components/UI/AppSectionTitle';
 import CalculateFormSelector from '../store/selectors/CalculateFormSelector';
 import EmailSubmissionForm from '../components/EmailSubmissionForm';
+import StatusPopup from '../components/StatusPopup';
+import EmailSubmissionFormSelector from '../store/selectors/EmailSubmissionFormSelector';
 
 const Home: FC = () => {
     const chartsCategories = useAppSelector(chartsSelector.GetChartsCategories);
@@ -70,6 +72,11 @@ const Home: FC = () => {
             <div className="container">
                 <EmailSubmissionForm />
             </div>
+
+            <StatusPopup
+                timer={ 6000 }
+                showSelector={ EmailSubmissionFormSelector.isSucceedSelector }
+            />
         </>
     );
 };
