@@ -1,15 +1,38 @@
 @import "../config/vars";
 
 .button {
-  transition: $transition;
-  position: relative;
-  cursor: pointer;
+  &, &-circle {
+    transition: $transition;
+    position: relative;
+    cursor: pointer;
+    border: none;
+  }
+
   width: 100%;
   background-color: $cAccent;
-  border: none;
   border-radius: 3.2rem;
   font-weight: 700;
   padding: 1.8rem 2.4rem 1.7rem;
+  &-circle {
+    border-radius: 50%;
+    padding: 1.5rem;
+    display: flex;
+    background-color: #131313;
+    &:hover {
+      background-color: darken(#131313, 6);
+    }
+    &:disabled {
+      background-color: rgba(#131313, .69);
+      &:hover {
+        background-color: rgba(#131313, .69);
+      }
+    }
+    .icon {
+      position: static;
+      color: white;
+      transform: unset;
+    }
+  }
   &:disabled {
     cursor: auto;
     background-color: $cAccentOp;

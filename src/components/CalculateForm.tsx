@@ -1,4 +1,4 @@
-import { FC, FormEvent, useMemo } from 'react';
+import { ChangeEvent, FC, FormEvent, useMemo } from 'react';
 import { useActions, useAppSelector } from '../hooks/redux';
 import AppInput from './UI/AppInput';
 import styles from  'src/styles/components/CalculateForm.module.scss';
@@ -8,6 +8,7 @@ import { useRenderWatcher } from '../hooks/useRenderWatcher';
 import AppButton from './UI/AppButton';
 import { CURRENCY } from '../config';
 import CalculateFormSelector from '../store/selectors/CalculateFormSelector';
+import parseToFloat from '../utils/parseToFloat';
 
 const CalculateForm: FC = () => {
     const actions = useActions();
@@ -28,6 +29,9 @@ const CalculateForm: FC = () => {
         calculate();
     }
 
+    function onChangeHandler(value: string, action: (value: any) => void) {
+        action(parseToFloat(value));
+    }
     useRenderWatcher('CalculateForm');
     return (
         <form
@@ -39,7 +43,7 @@ const CalculateForm: FC = () => {
                 label="Home price"
                 selector={ CalculateFormSelector.homePriceSelector }
                 errorSelector={ CalculateFormSelector.errorSelector('homePrice') }
-                onChangeHandler={ setHomePrice }
+                onChangeHandler={ (value) => onChangeHandler(value, setHomePrice) }
                 mask={ priceMaskOptions }
             />
             <AppInput
@@ -55,14 +59,14 @@ const CalculateForm: FC = () => {
                     label="Cash available for down payment"
                     selector={ CalculateFormSelector.cashAvailableSelector }
                     errorSelector={ CalculateFormSelector.errorSelector('cashAvailable') }
-                    onChangeHandler={ setCashAvailable }
+                    onChangeHandler={ (value) => onChangeHandler(value, setCashAvailable) }
                     mask={ priceMaskOptions }
                 />
                 <AppInput
                     type="circle"
                     name="cashAvailable"
                     selector={ CalculateFormSelector.cashAvailableSelectorPercent }
-                    onChangeHandler={ setCashAvailableByPercent }
+                    onChangeHandler={ (value) => onChangeHandler(value, setCashAvailableByPercent) }
                     mask={ percentMaskOptions }
                 />
             </div>
@@ -71,7 +75,7 @@ const CalculateForm: FC = () => {
                 label="Interest rate"
                 selector={ CalculateFormSelector.interestRateSelector }
                 errorSelector={ CalculateFormSelector.errorSelector('interestRate') }
-                onChangeHandler={ setInterestRate }
+                onChangeHandler={ (value) => onChangeHandler(value, setInterestRate) }
                 mask={ percentPrefixMaskOptions }
             />
             <AppButton

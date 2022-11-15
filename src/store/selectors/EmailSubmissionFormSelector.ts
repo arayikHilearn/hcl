@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { TRootState } from '../index';
-import { TCalculateFormData } from '../reducers/calculateForm';
+import { TEmailSubmissionFormData } from '../reducers/emailSubmissionForm';
 
 class EmailSubmissionFormSelectors {
     private static readonly emailSubmissionFormData = (state: TRootState) => state.emailSubmissionForm;
@@ -8,7 +8,7 @@ class EmailSubmissionFormSelectors {
 
     public static readonly emailSelector = createSelector(
         this.emailSubmissionFormData,
-        ({ email }) => email || '',
+        ({ email }) => email,
     );
 
     public static readonly hasErrorSelector = createSelector(
@@ -16,7 +16,7 @@ class EmailSubmissionFormSelectors {
         (error) => !!Object.keys(error).length
     );
 
-    public static readonly errorSelector = (key: keyof TCalculateFormData) => createSelector(
+    public static readonly errorSelector = (key: keyof TEmailSubmissionFormData) => createSelector(
         this.emailSubmissionFormErrors,
         (errors) => errors[key]
     );

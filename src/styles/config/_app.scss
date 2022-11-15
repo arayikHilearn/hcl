@@ -17,9 +17,13 @@ body {
   line-height: $lh;
 }
 
-//#root {
-//  font-size: $fz;
-//}
+#root {
+  //font-size: $fz;
+  padding-bottom: 6rem;
+  //& > *:last-child {
+  //  margin-bottom: 6rem;
+  //}
+}
 
 * {
   box-sizing: border-box;

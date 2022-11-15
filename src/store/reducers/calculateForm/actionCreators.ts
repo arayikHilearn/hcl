@@ -57,7 +57,8 @@ export const calculate = createAsyncThunk(
 
             return null;
         } catch (err) {
-            return rejectWithValue('Something went wrong!');
+            console.log(err);
+            //return rejectWithValue('Something went wrong!');
         }
 
     }

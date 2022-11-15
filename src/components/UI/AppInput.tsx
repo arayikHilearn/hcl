@@ -51,7 +51,7 @@ const AppInput: FC<InputProps> = ({
         inputProps = {
             ...inputProps,
             onChange: (event: ChangeEvent<HTMLInputElement>) => {
-                onChangeHandler(parseToFloat(event.target.value));
+                onChangeHandler(event.target.value);
             }
         };
     }
@@ -76,7 +76,7 @@ const AppInput: FC<InputProps> = ({
             <span className={ _c(
                 'dark-op-c',
                 styles['input-label'], {
-                    [styles['empty']]: value === null
+                    [styles['empty']]: value === null || value === ''
                 }) }
             >
                 { label }

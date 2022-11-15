@@ -7,6 +7,8 @@ import { useRenderWatcher } from '../hooks/useRenderWatcher';
 import AppButton from './UI/AppButton';
 import { CURRENCY } from '../config';
 import EmailSubmissionFormSelector from '../store/selectors/EmailSubmissionFormSelector';
+import emailMask from 'text-mask-addons/dist/emailMask';
+
 
 const EmailSubmissionForm: FC = () => {
     const actions = useActions();
@@ -27,24 +29,28 @@ const EmailSubmissionForm: FC = () => {
 
     useRenderWatcher('EmailSubmissionForm');
     return (
-        <form
-            onSubmit={ onSubmit }
-            className={ `row ${styles.form}` }
-        >
-            <AppInput
-                name="email"
-                label="Email"
-                selector={ EmailSubmissionFormSelector.emailSelector }
-                onChangeHandler={ setEmail }
-                //mask={ priceMaskOptions }
-            />
-            <AppButton
-                errorSelector={ EmailSubmissionFormSelector.hasErrorSelector }
-                type="submit"
+        <div className={ styles['form-wrapper'] }>
+            <h4 className={ styles.title }>Subscribe for waiting list</h4>
+            <form
+                onSubmit={ onSubmit }
+                className={ `row-sb ${styles.form}` }
             >
-                Submit
-            </AppButton>
-        </form>
+                <AppInput
+                    wrapperClassName={ styles.input }
+                    name="email"
+                    label="Email"
+                    selector={ EmailSubmissionFormSelector.emailSelector }
+                    errorSelector={ EmailSubmissionFormSelector.errorSelector('email') }
+                    onChangeHandler={ setEmail }
+                    mask={ emailMask }
+                />
+                <AppButton
+                    styleType="circle"
+                    errorSelector={ EmailSubmissionFormSelector.hasErrorSelector }
+                    type="submit"
+                />
+            </form>
+        </div>
     );
 };
 

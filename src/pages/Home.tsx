@@ -48,6 +48,11 @@ const Home: FC = () => {
                     </div>
                 </div>
             </AppHeader>
+
+            <div className="container">
+                <EmailSubmissionForm />
+            </div>
+
             { chartsCategories.map((cat, i) => (
                 <AppSection key={ cat }>
                     <div className="row-sb">
@@ -62,6 +67,9 @@ const Home: FC = () => {
                 </AppSection>
             )) }
 
+            <div className="container">
+                <EmailSubmissionForm />
+            </div>
         </>
     );
 };

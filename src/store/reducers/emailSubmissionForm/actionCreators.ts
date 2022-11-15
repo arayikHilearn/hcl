@@ -1,5 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { TRootState } from '../../index';
+import isValid, { setEmailErrorConfig } from '../../../utils/isValid';
+import { ICalculateForm } from '../calculateForm';
+import { IEmailSubmissionForm } from './index';
 
 export const emailSubmission = createAsyncThunk(
     'emailSubmissionForm/submit',
@@ -7,37 +10,23 @@ export const emailSubmission = createAsyncThunk(
         console.log('emailSubmissionForm/submit');
         try {
             const { emailSubmissionForm: { email } } = getState() as TRootState;
+            const error: IEmailSubmissionForm['error'] = {};
+
+            const errorEmail = isValid(email?.toString() || '', setEmailErrorConfig);
+            if (errorEmail) error.email = errorEmail;
+
+            if (Object.keys(error).length) {
+                return rejectWithValue(error);
+            }
+
 
             console.log(email, 1213);
             fulfillWithValue(true);
 
-
-            // if (!loanProgram) error.loanProgram = emptyErrorMessage;
-            //
-            // const homePriceError = isValid(homePrice?.toString() || '', homePriceErrorConfig);
-            // if (homePriceError) (error.homePrice = homePriceError);
-            //
-            // const cashAvailableError = isValid(cashAvailable?.toString() || '', cashAvailableErrorConfig(homePrice || 0));
-            // if (cashAvailableError) (error.cashAvailable = cashAvailableError);
-            //
-            // const interestRateError = isValid(interestRate?.toString() || '', setInterestErrorConfig);
-            // if (interestRateError) (error.interestRate = interestRateError);
-            //
-            //
-            // console.log(88777, 879, error, { loanProgram, cashAvailable, homePrice, interestRate });
-            //
-            //
             // if (Object.keys(error).length) {
             //     return rejectWithValue(error);
             // }
-            //
-            // console.log('calculateForm/submit', {
-            //     property_value: homePrice as number,
-            //     downpayment: cashAvailable as number,
-            //     interest_rate: interestRate as number,
-            //     term: loanProgram as number,
-            // });
-            //
+
             // const data = await ApiService.calculate({
             //     property_value: homePrice as number,
             //     downpayment: cashAvailable as number,
@@ -50,7 +39,7 @@ export const emailSubmission = createAsyncThunk(
             // return null;
         } catch (err) {
             console.log(err);
-            return rejectWithValue('Something went wrong!');
+            //return rejectWithValue('Something went wrong!');
         }
 
     }

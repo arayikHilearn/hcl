@@ -1,4 +1,4 @@
-import { emptyErrorMessage, inRangeErrorMessage, minLengthErrorMessage } from '../config';
+import { emailErrorMessage, emptyErrorMessage, inRangeErrorMessage, minLengthErrorMessage } from '../config';
 
 interface IIsValidOptions {
     inRange?: {
@@ -16,11 +16,13 @@ interface IIsValidOptions {
         message: string
     },
     empty?: boolean
+    isEmail?: boolean
 }
 
 export default function isValid(
     value: string,
     {
+        isEmail,
         minLength,
         empty,
         inRange
@@ -29,10 +31,15 @@ export default function isValid(
     let error: string | null = null;
 
     if (value) {
+        if (isEmail) {
+            const emailRegExp = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            const isValidEmail = emailRegExp.test(value);
+            if (!isValidEmail) error = emailErrorMessage;
+        }
+
         if (minLength && value.length < minLength?.value) {
             error = minLengthErrorMessage('1000$');
         }
-
 
         if (inRange) {
             if (inRange.type === 'percent') {
@@ -53,7 +60,7 @@ export default function isValid(
         }
 
     } else {
-        empty && (error = emptyErrorMessage);
+        if (empty) error = emptyErrorMessage;
     }
 
     return error;
@@ -79,4 +86,9 @@ export const setInterestErrorConfig = {
     inRange: {
         value: [ 1, 20 ]
     }
+} as IIsValidOptions;
+
+export const setEmailErrorConfig = {
+    empty: true,
+    isEmail: true
 } as IIsValidOptions;
