@@ -9,13 +9,13 @@ const pagesConfig: Record<string, Partial<IPageOptions>> = {
         //authRequirement: true,
         actions: [
             {
-                cb: calculateFormActionCreators.setHomePrice.bind(null, 12312),
+                cb: calculateFormActionCreators.setHomePrice.bind(null, 1000000),
             },
             {
-                cb: calculateFormActionCreators.setCashAvailable.bind(null, 2831.76),
+                cb: calculateFormActionCreators.setCashAvailable.bind(null, 200000),
             },
             {
-                cb: calculateFormActionCreators.setInterestRate.bind(null, 0.03),
+                cb: calculateFormActionCreators.setInterestRate.bind(null, 6),
             },
             {
                 cb: calculateFormActionCreators.calculate,

@@ -31,18 +31,18 @@ const Home: FC = () => {
                         <div className={ `row-sb ${styles['col-2']}` }>
                             <Widget
                                 type="monotone"
-                                label="Principal"
-                                selector={ CalculateFormSelector.cashAvailableSelector }
+                                label="Loan Principal"
+                                selector={ CalculateFormSelector.cashAvailableAndHomePriceDiffSelector }
                                 title="Conventional"
-                                subTitle="20% down payment"
+                                subTitle={ <><span>Down payment</span> <span>$200K</span> </> }
                             />
                             <Widget
                                 type="default"
                                 background="rgba(231, 252, 185, 0.1)"
-                                label="Principal"
+                                label="Loan Principal"
                                 selector={ CalculateFormSelector.homePriceSelector }
                                 title="HCL"
-                                subTitle="20% investment"
+                                subTitle={ <><span>Investment</span> <span>$200K</span> </>  }
                             />
                         </div>
                     </div>

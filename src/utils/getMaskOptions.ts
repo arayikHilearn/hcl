@@ -26,7 +26,7 @@ export default function getMaskOptions(prefix: string, type: 'price' | 'percent-
                     allowDecimal: true,
                     decimalSymbol: '.',
                     decimalLimit: 2,
-                    integerLimit: 1,
+                    integerLimit: 2,
                     allowNegative: false,
                     allowLeadingZeroes: false,
                 }),

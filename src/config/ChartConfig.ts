@@ -5,12 +5,17 @@ import numberToShortForm from '../utils/numberToShortForm';
 import { WithPrefix } from '../utils/types';
 import Highcharts from 'highcharts';
 
-//!!! 1M, 20%, 6%  // Loan Principal, Loan Principal // Balances // widgets bottom $200K in new line // change first widget count to 800K// change rate input value to 1-20%
+//*** 1M, 20%, 6%
+//*** Loan Principal, Loan Principal
+//*** Balances
+//*** widgets bottom $200K in new line
+//*** change first widget count to 800K
+//*** change rate input value to 1-20%
 
 //!! Stats for summary items:
-// Total savings: $302,324
-// Avg monthly payment: $12,345
-// Percent time below conventional: 59%
+//!! Total savings: $302,324
+//!! Avg monthly payment: $12,345
+//!! Percent time below conventional: 59%
 
 interface IAdditionalStyles {
     $chartWidth: number;

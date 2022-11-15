@@ -77,6 +77,6 @@ export const cashAvailableErrorConfig = (compareValue: number) => ({
 export const setInterestErrorConfig = {
     empty: true,
     inRange: {
-        value: [ 0.01, 0.2 ]
+        value: [ 1, 20 ]
     }
 } as IIsValidOptions;

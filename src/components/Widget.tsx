@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import styles from 'src/styles/components/Widget.module.scss';
 import { HomeIcon } from './icons';
 import { useRenderWatcher } from '../hooks/useRenderWatcher';
@@ -13,7 +13,7 @@ export interface IWidgetProps {
     label: string;
     selector: (state: TRootState) => unknown;
     title: string;
-    subTitle: string;
+    subTitle: ReactNode | string;
 }
 
 const Widget: FC<IWidgetProps> = ({

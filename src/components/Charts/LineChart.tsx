@@ -33,7 +33,7 @@ const LineChart: FC<{style?: CSSProperties, category: typeof ChartsCategoryList[
             <ColumnChartLabels
                 width={ config.chartOuterWidth }
                 padding={ config.chartPadding }
-                title="Chart Two"
+                title="Balances"
                 dataLabels={ [
                     [
                         { text: 'HCL cumulative payments', colorIndex: 1, type: 'line' },

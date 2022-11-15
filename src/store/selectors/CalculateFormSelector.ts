@@ -16,6 +16,12 @@ class CalculateFormSelectors {
         ({ cashAvailable }) => cashAvailable,
     );
 
+    public static readonly cashAvailableAndHomePriceDiffSelector = createSelector(
+        CalculateFormSelectors.homePriceSelector,
+        CalculateFormSelectors.cashAvailableSelector,
+        (homePrice, cashAvailableSelector) => homePrice && cashAvailableSelector ? homePrice - cashAvailableSelector : 0,
+    );
+
     public static readonly cashAvailableSelectorPercent = createSelector(
         CalculateFormSelectors.cashAvailableSelector,
         CalculateFormSelectors.homePriceSelector,
