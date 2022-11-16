@@ -29,7 +29,7 @@ export const emailSubmission = createAsyncThunk(
             };
 
             const isSucceed: boolean = await ApiService.emailSubscribe({ email: email as string, calculationsData });
-
+            console.log(isSucceed, 'isSucceed');
             return fulfillWithValue(isSucceed);
         } catch (err) {
             return rejectWithValue({ api: apiErrorMessage });

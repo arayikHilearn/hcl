@@ -19,7 +19,9 @@ const emailSubmissionFormSlice = createSlice({
             const errorEmail = isValid(payload?.toString() || '', setEmailErrorConfig);
             errorEmail ? (state.error.email = errorEmail) : (delete state.error.email);
         },
-
+        cleanIsSucceed(state) {
+            state.isSucceed = false;
+        }
     },
     extraReducers: {
         [emailSubmission.fulfilled.type]: (state, { payload }: PayloadAction<boolean>) => {
